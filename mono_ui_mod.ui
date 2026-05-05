@@ -1,0 +1,1923 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1494</width>
+    <height>878</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="5,7">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>3</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Mono</string>
+       </attribute>
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="geometry">
+         <rect>
+          <x>540</x>
+          <y>100</y>
+          <width>271</width>
+          <height>151</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout" columnstretch="2,1,3">
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Monochromator Scan</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>Remaining step:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="mono_pos_label">
+           <property name="text">
+            <string>Unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLabel" name="mono_program_state_label">
+           <property name="text">
+            <string>Unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Monochromator state:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_23">
+           <property name="text">
+            <string>Mono position:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_20">
+           <property name="text">
+            <string>Remaining test:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QLabel" name="exit_2_slit_size_label">
+           <property name="text">
+            <string>Exit_2 slit size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QLabel" name="exit_slit_size_label">
+           <property name="text">
+            <string>Exit_3 slit size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QLabel" name="entrance_1_slit_size_label">
+           <property name="text">
+            <string>Entrance_1 size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="entrance_slit_size_label">
+           <property name="text">
+            <string>Entrance_0 size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="mono_scan_remaing_step_label">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="mono_scan_remaing_test_label">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QPushButton" name="emergenency_stop_botton">
+        <property name="geometry">
+         <rect>
+          <x>550</x>
+          <y>250</y>
+          <width>101</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: red;
+        color: white;
+        font-weight: bold;</string>
+        </property>
+        <property name="text">
+         <string>Emergency stop</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="filename_label">
+        <property name="geometry">
+         <rect>
+          <x>80</x>
+          <y>220</y>
+          <width>51</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QWidget" name="widget_3" native="true">
+        <property name="geometry">
+         <rect>
+          <x>830</x>
+          <y>0</y>
+          <width>101</width>
+          <height>131</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>Slit control:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="mono_slit_select_comboBox">
+           <item>
+            <property name="text">
+             <string>Entrance_0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Entrance_1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Exit_2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Exit_3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_21">
+           <property name="text">
+            <string>Slit Width:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="mono_slit_size_select_spinBox">
+           <property name="maximum">
+            <number>2000</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="mono_confirm_slit_size_button">
+           <property name="text">
+            <string>confirm size</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_4" native="true">
+        <property name="geometry">
+         <rect>
+          <x>570</x>
+          <y>30</y>
+          <width>221</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="1">
+          <widget class="QTextEdit" name="mono_pos_input"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="unit_label_4">
+           <property name="text">
+            <string>unit</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="mono_goto_button">
+           <property name="text">
+            <string>mono go to</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QLabel" name="position_limit_label">
+           <property name="text">
+            <string>limit</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_5" native="true">
+        <property name="geometry">
+         <rect>
+          <x>450</x>
+          <y>0</y>
+          <width>101</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>COM port sel:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="com_port_comboBox"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="update_port_button">
+           <property name="text">
+            <string>update port</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_6" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>431</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="2" column="0">
+          <widget class="QTextBrowser" name="mono_powermeter_log"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Monochromator log:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_8" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>180</y>
+          <width>541</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="mono_range_mode_label">
+           <property name="text">
+            <string>mono_range</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Enter file name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QTextEdit" name="filenam_input">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>101</horstretch>
+             <verstretch>31</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="html">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:9.75pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:7.8pt;&quot;&gt;Data&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="current_filename_label">
+           <property name="text">
+            <string>Unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Current file name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QLabel" name="file_location_label">
+           <property name="text">
+            <string>Unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="file_location_label_2">
+           <property name="text">
+            <string>Saved location:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_9" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>100</y>
+          <width>541</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <widget class="QTextEdit" name="mono_start_pos_input">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>40</y>
+           <width>111</width>
+           <height>31</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QTextEdit" name="mono_end_pos_input">
+         <property name="geometry">
+          <rect>
+           <x>150</x>
+           <y>40</y>
+           <width>101</width>
+           <height>31</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_7">
+         <property name="geometry">
+          <rect>
+           <x>150</x>
+           <y>20</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>End:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_11">
+         <property name="geometry">
+          <rect>
+           <x>420</x>
+           <y>20</y>
+           <width>71</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Test cycles:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="unit_label_2">
+         <property name="geometry">
+          <rect>
+           <x>230</x>
+           <y>20</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>unit</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="stepsize_mono_pos_label">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>20</y>
+           <width>51</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="unit_label">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>20</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>unit</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_6">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>20</y>
+           <width>41</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Start:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="test_cycles_label">
+         <property name="geometry">
+          <rect>
+           <x>500</x>
+           <y>20</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="end_mono_pos_label">
+         <property name="geometry">
+          <rect>
+           <x>180</x>
+           <y>20</y>
+           <width>51</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+        <widget class="QTextEdit" name="mono_stepsize_input">
+         <property name="geometry">
+          <rect>
+           <x>270</x>
+           <y>40</y>
+           <width>111</width>
+           <height>31</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="start_mono_pos_label">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>20</y>
+           <width>51</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_8">
+         <property name="geometry">
+          <rect>
+           <x>260</x>
+           <y>20</y>
+           <width>55</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Step size:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="unit_label_3">
+         <property name="geometry">
+          <rect>
+           <x>390</x>
+           <y>20</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>unit</string>
+         </property>
+        </widget>
+        <widget class="QTextEdit" name="mono_test_cycle_input">
+         <property name="geometry">
+          <rect>
+           <x>400</x>
+           <y>40</y>
+           <width>121</width>
+           <height>31</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="mono_wl_spinbox">
+         <property name="geometry">
+          <rect>
+           <x>270</x>
+           <y>40</y>
+           <width>101</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>500</number>
+         </property>
+        </widget>
+        <zorder>mono_wl_spinbox</zorder>
+        <zorder>mono_stepsize_input</zorder>
+        <zorder>mono_start_pos_input</zorder>
+        <zorder>mono_end_pos_input</zorder>
+        <zorder>label_7</zorder>
+        <zorder>label_11</zorder>
+        <zorder>unit_label_2</zorder>
+        <zorder>stepsize_mono_pos_label</zorder>
+        <zorder>unit_label</zorder>
+        <zorder>label_6</zorder>
+        <zorder>test_cycles_label</zorder>
+        <zorder>end_mono_pos_label</zorder>
+        <zorder>start_mono_pos_label</zorder>
+        <zorder>label_8</zorder>
+        <zorder>unit_label_3</zorder>
+        <zorder>mono_test_cycle_input</zorder>
+       </widget>
+       <widget class="QPushButton" name="test_button">
+        <property name="geometry">
+         <rect>
+          <x>970</x>
+          <y>50</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>for testing</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="test_button2">
+        <property name="geometry">
+         <rect>
+          <x>1080</x>
+          <y>50</y>
+          <width>93</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>for testing2</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="start_mono_button">
+        <property name="geometry">
+         <rect>
+          <x>970</x>
+          <y>10</y>
+          <width>151</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Start monochromator</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="stop_mono_button">
+        <property name="geometry">
+         <rect>
+          <x>1140</x>
+          <y>10</y>
+          <width>151</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Stop monochromator</string>
+        </property>
+       </widget>
+       <widget class="QTextBrowser" name="console_statusbox_mono">
+        <property name="geometry">
+         <rect>
+          <x>830</x>
+          <y>160</y>
+          <width>621</width>
+          <height>131</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_40">
+        <property name="geometry">
+         <rect>
+          <x>830</x>
+          <y>140</y>
+          <width>47</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Console</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="start_mono_iv_button">
+        <property name="geometry">
+         <rect>
+          <x>970</x>
+          <y>110</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Start mono + iv measure</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="stop_mono_iv_button">
+        <property name="geometry">
+         <rect>
+          <x>1160</x>
+          <y>110</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Stop mono + iv measure</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>Current source and volt meter</string>
+       </attribute>
+       <widget class="QWidget" name="widget_7" native="true">
+        <property name="geometry">
+         <rect>
+          <x>670</x>
+          <y>0</y>
+          <width>501</width>
+          <height>141</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>Arm status</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>Output status</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_25">
+           <property name="text">
+            <string>Inner shield config</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_26">
+           <property name="text">
+            <string>Interlock status:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="arm_status_label">
+           <property name="text">
+            <string>Arm status</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="output_status_label">
+           <property name="text">
+            <string>Output status</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="inner_shield_label">
+           <property name="text">
+            <string>Inner shield config</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="interlock_label">
+           <property name="text">
+            <string>Interlock status:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_27">
+           <property name="text">
+            <string>Remaining time:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_28">
+           <property name="text">
+            <string>Total points</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="label_29">
+           <property name="text">
+            <string>Output_low config</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="label_30">
+           <property name="text">
+            <string>2182A connected?</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="remain_time_label">
+           <property name="text">
+            <string>XXX</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="totalpoint_label">
+           <property name="text">
+            <string>Total poin</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QLabel" name="output_low_config_label">
+           <property name="text">
+            <string>Output_low config</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QLabel" name="nv_2182a_label">
+           <property name="text">
+            <string>2182A connected?</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>651</width>
+          <height>281</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_6" rowstretch="1,2,1,4,0,0" columnstretch="2,1">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_31">
+           <property name="text">
+            <string>Keithley 6220 status:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_32">
+           <property name="text">
+            <string>Keithley 2182A status:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_33">
+           <property name="text">
+            <string>console:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTextBrowser" name="keithley6220_statusbox"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QTextBrowser" name="keithley2182a_statusbox"/>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_34">
+           <property name="text">
+            <string>Saved location:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QTextBrowser" name="console_statusbox"/>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QLabel" name="file_location_label_3">
+           <property name="text">
+            <string>location</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_10" native="true">
+        <property name="geometry">
+         <rect>
+          <x>670</x>
+          <y>150</y>
+          <width>651</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="1" column="2">
+          <widget class="QLabel" name="stop_current_lab">
+           <property name="text">
+            <string>XXX</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4">
+          <widget class="QLabel" name="delta_label">
+           <property name="text">
+            <string>XXX</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="label_36">
+           <property name="text">
+            <string>Delta</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_38">
+           <property name="text">
+            <string>Step size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QTextEdit" name="stop_cur_inputbox"/>
+         </item>
+         <item row="2" column="3">
+          <widget class="QTextEdit" name="cur_step_inputbox"/>
+         </item>
+         <item row="2" column="4">
+          <widget class="QTextEdit" name="delta_inputbox"/>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="current_step_lab">
+           <property name="text">
+            <string>XXX</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_39">
+           <property name="text">
+            <string>Start current</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QTextEdit" name="start_cur_inputbox"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="start_current_lab">
+           <property name="text">
+            <string>XXX</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_37">
+           <property name="text">
+            <string>Stop current</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QLabel" name="label_35">
+           <property name="text">
+            <string>Delay</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="5">
+          <widget class="QLabel" name="delay_label">
+           <property name="text">
+            <string>XXX</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
+          <widget class="QTextEdit" name="delay_inputbox"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QPushButton" name="start_iv_meas_button">
+        <property name="geometry">
+         <rect>
+          <x>1180</x>
+          <y>30</y>
+          <width>131</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Start iv curve measure</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="stop_iv_meas_button">
+        <property name="geometry">
+         <rect>
+          <x>1320</x>
+          <y>30</y>
+          <width>131</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Stop iv curve measure</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="widget_11" native="true">
+        <property name="geometry">
+         <rect>
+          <x>670</x>
+          <y>240</y>
+          <width>261</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8" columnstretch="3,2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_41">
+           <property name="text">
+            <string>Y range = [y1,y2]</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTextEdit" name="y_range_input"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="y_range_label">
+           <property name="text">
+            <string>[y1,y2]</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>powermeter and stage</string>
+       </attribute>
+       <widget class="QWidget" name="widget_12" native="true">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>20</y>
+          <width>461</width>
+          <height>151</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
+          <widget class="QLabel" name="start_position_label">
+           <property name="text">
+            <string>start at: None</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="step_size_label">
+           <property name="text">
+            <string>step size: None</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTextEdit" name="start_position_input"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="stop_position_label">
+           <property name="text">
+            <string>stop at: None</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QTextEdit" name="step_size_input"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QTextEdit" name="stop_position_input"/>
+         </item>
+         <item row="2" column="2">
+          <widget class="QPushButton" name="stop_stage_button">
+           <property name="text">
+            <string>stop scan</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="waiting_time_label">
+           <property name="text">
+            <string>stage wait time: None</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QTextEdit" name="waittime_input">
+           <property name="html">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:9.75pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QPushButton" name="confir_input_button">
+           <property name="text">
+            <string>confirm</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="start_stage_button">
+           <property name="text">
+            <string>start scan</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>xx + integration time</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Stage:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="remaining_steps_label">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>remaining steps</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="total_steps_label">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>total steps</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_13" native="true">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>180</y>
+          <width>381</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="2" column="0">
+          <widget class="QPushButton" name="goto_position_button">
+           <property name="text">
+            <string>goto position</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Send stage to (ps):</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTextEdit" name="goto_position_text_input">
+           <property name="html">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:9.75pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QTextBrowser" name="position_browser"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Stage position:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="get_position_button">
+           <property name="text">
+            <string>query current position</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_14" native="true">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>20</y>
+          <width>411</width>
+          <height>201</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Stage log:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="run_all_pushButton">
+           <property name="text">
+            <string>Stage + Mono scan</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="stop_all_pushButton">
+           <property name="text">
+            <string>Stop Stage + Mono scan</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QTextBrowser" name="stage_status_Browser"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_15" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>271</width>
+          <height>121</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_12" columnstretch="2,2,0">
+         <item row="3" column="1">
+          <widget class="QLabel" name="powermeter_unit_label">
+           <property name="text">
+            <string>Unknown</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_24">
+           <property name="text">
+            <string>Power readings:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLCDNumber" name="power_readings_lcdNumber">
+           <property name="smallDecimalPoint">
+            <bool>true</bool>
+           </property>
+           <property name="digitCount">
+            <number>10</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+           <property name="value" stdset="0">
+            <double>0.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_22">
+           <property name="text">
+            <string>Power meter unit:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="power_readings_unit_label">
+           <property name="text">
+            <string>unit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>Picoharp</string>
+       </attribute>
+       <widget class="QWidget" name="widget_16" native="true">
+        <property name="geometry">
+         <rect>
+          <x>510</x>
+          <y>10</y>
+          <width>301</width>
+          <height>231</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_13">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_42">
+           <property name="text">
+            <string>Device serial No.</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_43">
+           <property name="text">
+            <string>Initialized:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="picoharp_init_status_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_44">
+           <property name="text">
+            <string>cfd_zerocrossing_0:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="picoharp_serial_lab">
+           <property name="text">
+            <string>None</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="picoharp_resolution_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="picoharp_offset_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="picoharp_sync_divider_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_50">
+           <property name="text">
+            <string>sync_divider:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_48">
+           <property name="text">
+            <string>Offset:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_52">
+           <property name="text">
+            <string>cfd_level_0:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_47">
+           <property name="text">
+            <string>cfd_level_1:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLabel" name="picoharp_cfd_zc_0_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="picoharp_cfd_lev_0_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLabel" name="picoharp_cfd_lev_1_lab">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_51">
+           <property name="text">
+            <string>cfd_zerocrossing_1:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLabel" name="picoharp_cfd_zc_0_lab_2">
+           <property name="text">
+            <string>No</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_46">
+           <property name="text">
+            <string>Binning:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_17" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>491</width>
+          <height>231</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_14">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_45">
+           <property name="text">
+            <string>Picoharb log:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QTextBrowser" name="picoharb_log_display"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="picoharp_connect_button">
+           <property name="text">
+            <string>Connect picoharp</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="picoharp_disconnect_button">
+           <property name="text">
+            <string>Disconnect picoharp</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="widget_18" native="true">
+        <property name="geometry">
+         <rect>
+          <x>820</x>
+          <y>10</y>
+          <width>186</width>
+          <height>108</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_49">
+           <property name="text">
+            <string>picoharp/mono scan control:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="picoharp_start_mono_button">
+           <property name="text">
+            <string>Start picoharp/mono</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="picoharp_stop_mono_button">
+           <property name="text">
+            <string>Stop picoharp/mono</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabWidget_plot">
+      <property name="currentIndex">
+       <number>2</number>
+      </property>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>IV curve</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="PlotWidget" name="ui_plot_canva" native="true"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Mono plot</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QWidget" name="plotwidget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>Picoharp plot</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QWidget" name="picoharp_plot" native="true"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1494</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionChange_data_directory"/>
+   </widget>
+   <widget class="QMenu" name="menuDisplay">
+    <property name="title">
+     <string>Display</string>
+    </property>
+    <addaction name="actionDark_Light_mode"/>
+   </widget>
+   <widget class="QMenu" name="menuConnection">
+    <property name="title">
+     <string>Device connection</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionConnect_spectrometer"/>
+    <addaction name="actionClose_spectrometer"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnect_stage"/>
+    <addaction name="actionClose_stage"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnect_monochromator"/>
+    <addaction name="actionclose_monochromator"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnec_power_meter"/>
+    <addaction name="actionClose_power_meter"/>
+    <addaction name="separator"/>
+    <addaction name="actionKeithley6220"/>
+    <addaction name="actionKeithley6220_discon"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuStage">
+    <property name="title">
+     <string>Stage function</string>
+    </property>
+    <addaction name="actionReturn_to_home"/>
+   </widget>
+   <widget class="QMenu" name="menuSpectormeter_function">
+    <property name="title">
+     <string>Spectrometer function</string>
+    </property>
+    <addaction name="actionStart_ploting"/>
+    <addaction name="actionStop_plotting"/>
+   </widget>
+   <widget class="QMenu" name="menuMonochromator_function">
+    <property name="title">
+     <string>Monochromator function</string>
+    </property>
+    <addaction name="actionInitialize_monochromator"/>
+    <addaction name="actionCheck_monochromator_state"/>
+    <addaction name="actionEnter_main_program"/>
+    <addaction name="actionGet_current_position"/>
+    <addaction name="actionCheck_limit"/>
+    <addaction name="actionCheck_motor_status"/>
+   </widget>
+   <widget class="QMenu" name="menuKeithley_function">
+    <property name="title">
+     <string>Keithley function</string>
+    </property>
+    <addaction name="actionStart_i_v_measure"/>
+    <addaction name="actionStop_i_v_measure"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_inner_shield_GUARD"/>
+    <addaction name="actionStart_measurement"/>
+    <addaction name="separator"/>
+    <addaction name="actionRetrieve_Data"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_output_low_GROUND"/>
+    <addaction name="actionSet_output_low_FLOAT"/>
+    <addaction name="separator"/>
+    <addaction name="actionArm_device"/>
+    <addaction name="actionStop_arm_query_timer"/>
+    <addaction name="actionsave_data"/>
+   </widget>
+   <widget class="QMenu" name="menuKeithley_status_check">
+    <property name="title">
+     <string>Keithley status check</string>
+    </property>
+    <addaction name="actionInner_shield_config"/>
+    <addaction name="actionOutput_Low_config"/>
+    <addaction name="actionArmed"/>
+    <addaction name="actionInterlock"/>
+    <addaction name="actionVerify_params"/>
+    <addaction name="actionDevice_output_status"/>
+    <addaction name="actionError_message"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuDisplay"/>
+   <addaction name="menuConnection"/>
+   <addaction name="menuStage"/>
+   <addaction name="menuSpectormeter_function"/>
+   <addaction name="menuMonochromator_function"/>
+   <addaction name="menuKeithley_function"/>
+   <addaction name="menuKeithley_status_check"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
+   </property>
+  </action>
+  <action name="actionChange_data_directory">
+   <property name="text">
+    <string>Change data directory</string>
+   </property>
+  </action>
+  <action name="actionDark_Light_mode">
+   <property name="text">
+    <string>Dark/Light mode</string>
+   </property>
+  </action>
+  <action name="actionConnect_spectrometer">
+   <property name="text">
+    <string>Connect spectrometer</string>
+   </property>
+  </action>
+  <action name="actionClose_spectrometer">
+   <property name="text">
+    <string>Close spectrometer</string>
+   </property>
+  </action>
+  <action name="actionConnect_stage">
+   <property name="text">
+    <string>Connect stage</string>
+   </property>
+  </action>
+  <action name="actionClose_stage">
+   <property name="text">
+    <string>Close stage</string>
+   </property>
+  </action>
+  <action name="actionReturn_to_home">
+   <property name="text">
+    <string>Return to home</string>
+   </property>
+  </action>
+  <action name="actionStart_ploting">
+   <property name="text">
+    <string>Start plotting</string>
+   </property>
+  </action>
+  <action name="actionStop_plotting">
+   <property name="text">
+    <string>Stop plotting</string>
+   </property>
+  </action>
+  <action name="actionConnect_monochromator">
+   <property name="text">
+    <string>Connect monochromator</string>
+   </property>
+  </action>
+  <action name="actionclose_monochromator">
+   <property name="text">
+    <string>Close monochromator</string>
+   </property>
+  </action>
+  <action name="actionConnec_power_meter">
+   <property name="text">
+    <string>Connect power meter</string>
+   </property>
+  </action>
+  <action name="actionClose_power_meter">
+   <property name="text">
+    <string>Close power meter</string>
+   </property>
+  </action>
+  <action name="actionInitialize_monochromator">
+   <property name="text">
+    <string>Initialize monochromator</string>
+   </property>
+  </action>
+  <action name="actionCheck_monochromator_state">
+   <property name="text">
+    <string>Check monochromator state</string>
+   </property>
+  </action>
+  <action name="actionEnter_main_program">
+   <property name="text">
+    <string>Enter main program</string>
+   </property>
+  </action>
+  <action name="actionGet_current_position">
+   <property name="text">
+    <string>Get current position</string>
+   </property>
+  </action>
+  <action name="actionCheck_limit">
+   <property name="text">
+    <string>Check limit</string>
+   </property>
+  </action>
+  <action name="actionCheck_motor_status">
+   <property name="text">
+    <string>Check motor status</string>
+   </property>
+  </action>
+  <action name="actionConnect_voltmeter_current_source">
+   <property name="text">
+    <string>Connect voltmeter &amp; current source</string>
+   </property>
+  </action>
+  <action name="actionClose_voltmeter_and_current_source">
+   <property name="text">
+    <string>Close voltmeter and current source</string>
+   </property>
+  </action>
+  <action name="actionKeithley6220">
+   <property name="text">
+    <string>Keithley6220</string>
+   </property>
+  </action>
+  <action name="actionKeithley6220_discon">
+   <property name="text">
+    <string>Close Keithley6220</string>
+   </property>
+  </action>
+  <action name="actionStart_i_v_measure">
+   <property name="text">
+    <string>Start i-v measure</string>
+   </property>
+  </action>
+  <action name="actionStop_i_v_measure">
+   <property name="text">
+    <string>Stop all process</string>
+   </property>
+  </action>
+  <action name="actionSet_inner_shield_GUARD">
+   <property name="text">
+    <string>Set inner shield GUARD</string>
+   </property>
+  </action>
+  <action name="actionStart_measurement">
+   <property name="text">
+    <string>Start measurement</string>
+   </property>
+  </action>
+  <action name="actionRetrieve_Data">
+   <property name="text">
+    <string>Get data</string>
+   </property>
+  </action>
+  <action name="actionSet_output_low_GROUND">
+   <property name="text">
+    <string>Set output low GROUND</string>
+   </property>
+  </action>
+  <action name="actionSet_output_low_FLOAT">
+   <property name="text">
+    <string>Set output low FLOAT</string>
+   </property>
+  </action>
+  <action name="actionInner_shield_config">
+   <property name="text">
+    <string>Inner shield config</string>
+   </property>
+  </action>
+  <action name="actionOutput_Low_config">
+   <property name="text">
+    <string>Output_Low config</string>
+   </property>
+  </action>
+  <action name="actionArmed">
+   <property name="text">
+    <string>Armed?</string>
+   </property>
+  </action>
+  <action name="actionInterlock">
+   <property name="text">
+    <string>Interlock</string>
+   </property>
+  </action>
+  <action name="actionVerify_params">
+   <property name="text">
+    <string>Verify params</string>
+   </property>
+  </action>
+  <action name="actionDevice_output_status">
+   <property name="text">
+    <string>Device output status</string>
+   </property>
+  </action>
+  <action name="actionError_message">
+   <property name="text">
+    <string>Error message</string>
+   </property>
+  </action>
+  <action name="actionArm_device">
+   <property name="text">
+    <string>Arm device</string>
+   </property>
+  </action>
+  <action name="actionStop_arm_query_timer">
+   <property name="text">
+    <string>Stop arm query timer</string>
+   </property>
+  </action>
+  <action name="actionsave_data">
+   <property name="text">
+    <string>save_data</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
