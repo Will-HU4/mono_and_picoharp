@@ -335,3 +335,54 @@ class Triax320:
             print("Device not connected")
             return
         pass
+    
+    def set_exit_mirror(self, position):
+        """
+        Sends the mirror switch command to the Triax hardware.
+        position 0: Front Exit (Uses 'f0')
+        position 1: Side Exit (Uses 'e0')
+        """
+        if not self.device_connected:
+            return
+    
+    # Map the position integer to the specific hardware command string
+    # Based on your finding: 'f0' for Front, 'e0' for Side
+        if position == 0:
+            command_string = "f0\r"
+        else:
+            command_string = "e0\r"
+
+        try:
+        # Send the encoded string to the hardware
+            self.device.write_raw(command_string.encode())
+        
+        # Mirror motors are mechanical; the manual suggests a delay
+            import time
+            time.sleep(2.0) 
+        
+        except Exception as e:
+            print(f"Hardware communication error: {e}")
+        
+    def set_grating(self, position: int):
+        """
+        Changes the grating position.
+        :param position: 0 for Grating 1 (a0), 1 for Grating 2 (b0)
+        """
+        if not self.device_connected:
+            self.log_message_signal("Device not connected")
+            return
+        # a0 is position 0, b0 is position 1
+        command = "a0\r" if position == 0 else "b0\r"
+    
+        try:
+            print(f"Sending grating command: {command.strip()}")
+            self.device.write_raw(command.encode())
+        
+            # Read response from hardware (typically 'o' for OK)
+            response = self.device.read()
+            if "o" in response:
+                self.log_message_signal(f"Grating changed to Position {position + 1}")
+            else:
+                self.log_message_signal(f"Hardware response: {response}")
+        except Exception as e:
+            self.log_message_signal(f"Grating switch error: {e}")

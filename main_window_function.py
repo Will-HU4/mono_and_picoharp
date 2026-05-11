@@ -260,16 +260,15 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()  # Create an instance of the UI class
         self.ui.setupUi(self)  # Set up the UI
-        # Initialize Keithley Controller
-        self.keithley_controller = Keithley6220Qt("GPIB0::12::INSTR")  # Adjust address
+
         # Device state:
         self.stage_started = False
-        self.spectrometer_connected = False
+        # self.spectrometer_connected = False
         self.stage_connected = False
         self.plotting_started = False
         # Track the current mode:
         self.is_dark_mode = True
-        self.toggle_palette()  # Set the initial palette
+        self.setPalette(get_dark_palette())  # Set the initial palette
         # To keep track of the row count for caching:
         self.row_count = 0
         # for mono scan function and plot update:
@@ -303,34 +302,14 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(self.plot_widget)
         self.ui.plotwidget.setLayout(layout)
-        self.plot_widget.setBackground("w")
-        self.plot_widget.setTitle("Monochromator scan Data")
-        self.plot_widget.setLabel('left', 'Powermeter unit')
-        self.plot_widget.setLabel('bottom', "Mono unit")
-
-        # # Initialize the iv plot
-        self.iv_ui_controller = iv_ui_functions.IvUiController(self.ui, self.keithley_controller)
-        # self.plot = self.ui.ui_plot_canva
-        # self.plot.setBackground("w")  # ✅ White background
-        # self.plot.setLabel("left", "Voltage (V)")
-        # self.plot.setLabel("bottom", "Current (A)")
-        # self.plot.setTitle("I-V Curve")
-        # self.plot.addLegend()
-        # # Add curve for real-time updates
-        # self.curve = self.plot.plot([], [], pen=pg.mkPen(color="b", width=2), name="I-V Curve")
-        # flag for IV measurement loop:
-        self.iv_meas_stop_flag = threading.Event()
-        self.iv_meas_stop_flag.set()
 
         # Initialize the start position check timer:
         self.position_check_timer = QTimer(self)
         self.position_check_timer.timeout.connect(self.check_device_position)
         self.check_time = 2000
-        self.check_position_retries = None
+        self.check_position_retries = 0
         self.max_retries = 15  # Timeout after 15 retries (30 secs)
 
-        # init ui signals:
-        self.ui_signal = UiSignal()
 
         # create power meter object:
         self.power_meter = newport_1835c_serial.Newport1835C()
@@ -340,9 +319,11 @@ class MainWindow(QMainWindow):
         # file handling:
         self.file = fileIO.FileIO()
         self.plot = plotting_module.PlotData(self.plot_widget)
+        self.ui_signal = UiSignal()  # Instantiate the signal container
         self.ui_functions_init()
         self.ui_set_labels()
         self.signals_connect()
+        self.init_ui_connections()
         self.initialize_ui_mode()
 
         # Start the power meter readings timer with a 500 ms interval
@@ -497,6 +478,61 @@ class MainWindow(QMainWindow):
         self.ui.actionGet_current_position.triggered.connect(self.set_mono_pos_label)
         self.ui.actionCheck_limit.triggered.connect(self.ui_check_motor_limit)
         self.ui.actionCheck_motor_status.triggered.connect(self.ui_check_motor_status)
+        # In connect_Qaction_signals:
+        self.ui.actionConnect_monochromator.triggered.connect(self.mono.connect_device)
+        # Add this line to sync immediately after connection
+        self.ui.actionConnect_monochromator.triggered.connect(self.sync_mirror_from_hardware)
+    
+    def init_ui_connections(self):
+    # This connects the UI button object to the logic function below
+        self.ui.exit_toggle_btn.clicked.connect(self.handle_mirror_switch)
+        self.ui.grating_toggle_btn.clicked.connect(self.handle_grating_switch)
+    
+    def handle_mirror_switch(self):
+        if not self.mono.device_connected:
+            self.mono_and_power_meter_log("Error: Monochromator not connected.")
+            return
+
+        if not self.mono_stop_flag.is_set():
+            self.mono_and_power_meter_log("Cannot switch ports during active scan!")
+            return
+
+    # READ FROM DROPDOWN: 0 for Front, 1 for Side
+        target_pos = self.ui.mono_mirror_select_comboBox_2.currentIndex()
+
+    # Send command to hardware (o0 or o1)
+        self.mono.set_exit_mirror(target_pos)
+        self.mono.current_mirror_pos = target_pos
+
+    # Update the "Current Position" label to match the movement
+        port_text = "Side" if target_pos == 1 else "Front"
+        self.ui.Mirror_current_position.setText(port_text)
+    
+        self.mono_and_power_meter_log(f"Mirror command sent: Moving to {port_text} Exit.")
+
+    def sync_mirror_from_hardware(self):
+        """Force hardware to Side Exit on connect and verify."""
+        if not self.mono.device_connected:
+            return
+
+    # 1. Force move to Side Exit (Position 1)
+        self.mono.set_exit_mirror(1) 
+        self.mono_and_power_meter_log("Initializing mirror to Side Exit...")
+        time.sleep(0.5) # Give hardware a moment to react
+
+    # 2. Query to confirm
+        self.mono.ser.write(b"w\r")
+        time.sleep(0.1)
+        response = self.mono.ser.read_all().decode().strip()
+
+    # 3. Update UI based on confirmed truth
+        if "1" in response:
+            self.ui.Mirror_current_position.setText("Side")
+            self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
+            self.mono_and_power_meter_log("Hardware Check: Side Exit confirmed.")
+        else:
+            self.ui.Mirror_current_position.setText("Front")
+            self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(0)
 
     def setup_motor_status_timer(self, timer_interval=1000, max_wait=10000):
         """Set up the timer in __init__ to check the mono motor status.
@@ -508,6 +544,18 @@ class MainWindow(QMainWindow):
         self.motor_status_timer.timeout.connect(self.check_motor_idle)
         self.motor_wait_elapsed = 0
         self.motor_max_wait = max_wait  # 10 seconds
+
+    def sync_hardware_exit_port(self):
+        """Query the Triax hardware to see which exit mirror is currently active."""
+        if self.mono.device_connected:
+        # Send the 'w' or 'r' status command to the Triax
+        # You may need to implement get_mirror_status() in your triax_320.py
+            actual_pos = self.mono.get_mirror_status() 
+        
+            self.mono.current_mirror_pos = actual_pos
+            port_text = "Side Exit" if actual_pos == 1 else "Front Exit"
+            self.ui.current_exit_label.setText(f"Active Port: {port_text}")
+            self.mono_and_power_meter_log(f"Hardware Sync: Detected {port_text} active.")
 
     def check_motor_idle(self):
         """Check the mono motor status and update the UI accordingly."""
@@ -550,6 +598,26 @@ class MainWindow(QMainWindow):
         """Initialized the labels in the UI"""
         self.ui.file_location_label.setText(f"{self.file.saved_location}")
         self.ui.current_filename_label.setText(f"{self.file.file_name}")
+    
+        self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1) # Visual index for Side
+        self.ui.Mirror_current_position.setText("Side")
+        self.ui.mono_grating_select_comboBox_3.setCurrentIndex(0)
+    
+    def handle_grating_switch(self):
+        """Triggered by exit_toggle_btn_2 to move the grating turret."""
+        if not self.mono.device_connected:
+            self.mono_and_power_meter_log("Error: Monochromator not connected.")
+            return
+
+        if not self.mono_stop_flag.is_set():
+            self.mono_and_power_meter_log("Cannot switch gratings during active scan!")
+            return
+
+        # 0 = Position 1 (a0), 1 = Position 2 (b0)
+        target_pos = self.ui.mono_grating_select_comboBox_3.currentIndex()
+    
+        self.mono_and_power_meter_log(f"Moving to Grating {target_pos + 1}...")
+        self.mono.set_grating(target_pos)
 
     def mono_and_power_meter_log(self, message):
         """Log messages to the mono and power meter log browser"""
@@ -557,7 +625,6 @@ class MainWindow(QMainWindow):
         self.ui.mono_powermeter_log.append(f"{timestamp}: "+ message)
 
     def connect_spectrometer(self):
-        """(No use)"""
         # # print("Connecting spectrometer")
         # # try:
         # self.plot_data = PlotData(self.vid, self.pid, self.dll_path, self.plot_widget)
@@ -573,6 +640,19 @@ class MainWindow(QMainWindow):
         # self.current_intensity_data = self.plot_data.get_spectrometer_data(self.integration_time)
         # self.plot_data.init_cache()
         # self.ui.file_location_label.setText(f"Save location: \n {self.plot_data.default_save_dir}")
+       if self.mono.device_connected:
+        self.mono_and_power_meter_log("Triax connected. Setting default mirror to Side...")
+        
+        # 1. MOVE TO SIDE DEFAULT (o1 command)
+        self.mono.set_exit_mirror(1) 
+        self.mono.current_mirror_pos = 1
+        
+        # 2. UPDATE UI TO MATCH
+        self.ui.Mirror_current_position.setText("Side")
+        self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
+        
+        # Optional: Ask the hardware to confirm it arrived
+        self.sync_mirror_from_hardware()
         pass
 
     @pyqtSlot()
@@ -1088,8 +1168,8 @@ class MainWindow(QMainWindow):
             self.min_resolution = None
             self.mapping_exists = False
             self.mapping_coefficients = (None, None)
-            self.ui.start_mono_pos_label.setText(">=0")
-            self.ui.end_mono_pos_label.setText("<=32000")
+            self.ui.start_mono_pos_label.setText(">=-250000")
+            self.ui.end_mono_pos_label.setText("<=750000")
 
     def toggle_input_mode(self, use_wavelength):
         """toggle step size from using steps (textbox) or wavelength (spinbox) as input"""
@@ -1120,7 +1200,7 @@ class MainWindow(QMainWindow):
             self.ui.unit_label_3.setText("step")
             self.ui.unit_label_4.setText("step")
             self.toggle_input_mode(use_wavelength=False)
-            self.ui.position_limit_label.setText("0 <= step <= 32000")
+            self.ui.position_limit_label.setText("-250000 <= step <= 750000")
 
     def validate_mono_parameters(self, step_start, step_end, step_size, test_num):
         """validate monochromator parameters to fit within safety limits"""
@@ -1136,18 +1216,18 @@ class MainWindow(QMainWindow):
         if step_start > step_end:
             self.mono_and_power_meter_log("Start position cannot be greater than end position.")
             return False
-        if step_end > 32000:
-            self.mono_and_power_meter_log("End position must be 32000 or less.")
+        if step_end > 750000:
+            self.mono_and_power_meter_log("End position must be 750000 or less.")
             return False
         return True
 
     def validate_x_values(self):
-        """Check that x_values are all integers within [0, 32000]"""
+        """Check that x_values are all integers within [-250000, 750000]"""
         if not hasattr(self, "x_values"):
             self.mono_and_power_meter_log("x_values not defined.")
             return False
 
-        invalid = [x for x in self.x_values if not isinstance(x, int) or x < 0 or x > 32000]
+        invalid = [x for x in self.x_values if not isinstance(x, int) or x < -250000 or x > 750000]
 
         if invalid:
             self.mono_and_power_meter_log(f"Invalid x_values: {invalid}")
@@ -1204,8 +1284,8 @@ class MainWindow(QMainWindow):
             wavelengths = [a * s + b for s in unique_steps]
 
             # check if steps are within range
-            if any(step < 0 or step > 32000 for step in unique_steps):
-                self.mono_and_power_meter_log("Computed step out of range (0 to 32000).")
+            if any(step < -250000 or step > 750000 for step in unique_steps):
+                self.mono_and_power_meter_log("Computed step out of range (-250000 to 750000).")
                 return False
 
             # save to attributes
@@ -1319,7 +1399,7 @@ class MainWindow(QMainWindow):
                 self.mono_and_power_meter_log("No steps to scan. Please check the parameters.")
                 return
             # double check the parameters are correct range
-            invalid_steps = [s for s in self.x_values if s < 0 or s > 32000]
+            invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
             if invalid_steps:
                 self.mono_and_power_meter_log(f"Invalid steps detected: {invalid_steps}")
                 return
@@ -1670,7 +1750,7 @@ class MainWindow(QMainWindow):
         # Get mono motor position:
         mono_pos = self.mono.get_motor_position()
         # for testing purpose----------------:
-        # mono_pos = random.randint(0, 32000)
+        # mono_pos = random.randint(-250000, 750000)
         # -----------------------------------
         # Check if mapping exists to convert step to wavelength
         if self.mapping_exists:
@@ -1720,7 +1800,7 @@ class MainWindow(QMainWindow):
                 return
 
         # if position within range send motor to absolute position
-        if isinstance(position, int) and 0 <= position <= 32000:
+        if isinstance(position, int) and -250000 <= position <= 750000:
             try:
                 # Get current position of the motor
                 current_pos = self.mono.get_motor_position()
@@ -1734,7 +1814,7 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 self.mono_and_power_meter_log(f"Failed to move motor: {e}")
         else:
-            self.mono_and_power_meter_log("Target step must be between 0 and 32000.")
+            self.mono_and_power_meter_log("Target step must be between -250000 and 750000.")
             return
 
     def ui_check_motor_limit(self):
@@ -1923,7 +2003,7 @@ class MainWindow(QMainWindow):
             self.ui_signal.update_powermeter_unit_signal.emit(power_meter_unit)
 
             # double check the parameters are correct range
-            invalid_steps = [s for s in self.x_values if s < 0 or s > 32000]
+            invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
             if invalid_steps:
                 # self.mono_and_power_meter_log(f"Invalid steps detected: {invalid_steps}")
                 self.ui_signal.mono_powermeter_log_signal.emit(f"Invalid steps detected: {invalid_steps}")
@@ -2164,7 +2244,7 @@ class MainWindow(QMainWindow):
             return
 
         # double check the mono parameters are correct range
-        invalid_steps = [s for s in self.x_values if s < 0 or s > 32000]
+        invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
         if invalid_steps:
             # self.mono_and_power_meter_log(f"Invalid steps detected: {invalid_steps}")
             self.ui_signal.mono_powermeter_log_signal.emit(f"Invalid steps detected: {invalid_steps}")
@@ -2617,7 +2697,7 @@ class MainWindow(QMainWindow):
         tacq = tacq_ms
 
         # 1) Check mono steps validity
-        invalid_steps = [s for s in self.x_values if s < 0 or s > 32000]
+        invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
         if invalid_steps:
             print(f"Invalid MONO steps detected: {invalid_steps}")
             self.pico_meas_stop_flag.set()

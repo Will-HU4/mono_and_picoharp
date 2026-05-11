@@ -14,14 +14,14 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="5,7">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -37,13 +37,6 @@
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout" columnstretch="2,1,3">
-         <item row="2" column="0" colspan="2">
-          <widget class="QLabel" name="label_15">
-           <property name="text">
-            <string>Monochromator Scan</string>
-           </property>
-          </widget>
-         </item>
          <item row="4" column="0">
           <widget class="QLabel" name="label_16">
            <property name="text">
@@ -51,15 +44,22 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="mono_pos_label">
+         <item row="1" column="0" colspan="2">
+          <widget class="QLabel" name="mono_program_state_label">
            <property name="text">
             <string>Unknown</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0" colspan="2">
-          <widget class="QLabel" name="mono_program_state_label">
+         <item row="2" column="0" colspan="2">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>Monochromator Scan</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="mono_pos_label">
            <property name="text">
             <string>Unknown</string>
            </property>
@@ -72,17 +72,17 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_23">
-           <property name="text">
-            <string>Mono position:</string>
-           </property>
-          </widget>
-         </item>
          <item row="6" column="0">
           <widget class="QLabel" name="label_20">
            <property name="text">
             <string>Remaining test:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_23">
+           <property name="text">
+            <string>Mono position:</string>
            </property>
           </widget>
          </item>
@@ -93,17 +93,10 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="2">
-          <widget class="QLabel" name="exit_slit_size_label">
+         <item row="5" column="0">
+          <widget class="QLabel" name="mono_scan_remaing_step_label">
            <property name="text">
-            <string>Exit_3 slit size:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QLabel" name="entrance_1_slit_size_label">
-           <property name="text">
-            <string>Entrance_1 size:</string>
+            <string>0</string>
            </property>
           </widget>
          </item>
@@ -114,10 +107,17 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="mono_scan_remaing_step_label">
+         <item row="4" column="2">
+          <widget class="QLabel" name="entrance_1_slit_size_label">
            <property name="text">
-            <string>0</string>
+            <string>Entrance_1 size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QLabel" name="exit_slit_size_label">
+           <property name="text">
+            <string>Exit_3 slit size:</string>
            </property>
           </widget>
          </item>
@@ -128,14 +128,28 @@
            </property>
           </widget>
          </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_54">
+           <property name="text">
+            <string>Current Mirror:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="2">
+          <widget class="QLabel" name="Mirror_current_position">
+           <property name="text">
+            <string>Side</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
        <widget class="QPushButton" name="emergenency_stop_botton">
         <property name="geometry">
          <rect>
-          <x>550</x>
-          <y>250</y>
-          <width>101</width>
+          <x>540</x>
+          <y>260</y>
+          <width>131</width>
           <height>31</height>
          </rect>
         </property>
@@ -354,8 +368,8 @@
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:9.75pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:7.8pt;&quot;&gt;Data&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -617,8 +631,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="test_button">
         <property name="geometry">
          <rect>
-          <x>970</x>
-          <y>50</y>
+          <x>1260</x>
+          <y>80</y>
           <width>93</width>
           <height>28</height>
          </rect>
@@ -630,8 +644,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="test_button2">
         <property name="geometry">
          <rect>
-          <x>1080</x>
-          <y>50</y>
+          <x>1360</x>
+          <y>80</y>
           <width>93</width>
           <height>28</height>
          </rect>
@@ -643,8 +657,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="start_mono_button">
         <property name="geometry">
          <rect>
-          <x>970</x>
-          <y>10</y>
+          <x>1300</x>
+          <y>0</y>
           <width>151</width>
           <height>31</height>
          </rect>
@@ -656,8 +670,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="stop_mono_button">
         <property name="geometry">
          <rect>
-          <x>1140</x>
-          <y>10</y>
+          <x>1300</x>
+          <y>40</y>
           <width>151</width>
           <height>31</height>
          </rect>
@@ -692,7 +706,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="start_mono_iv_button">
         <property name="geometry">
          <rect>
-          <x>970</x>
+          <x>1120</x>
           <y>110</y>
           <width>161</width>
           <height>31</height>
@@ -705,7 +719,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QPushButton" name="stop_mono_iv_button">
         <property name="geometry">
          <rect>
-          <x>1160</x>
+          <x>1290</x>
           <y>110</y>
           <width>161</width>
           <height>31</height>
@@ -714,6 +728,142 @@ p, li { white-space: pre-wrap; }
         <property name="text">
          <string>Stop mono + iv measure</string>
         </property>
+       </widget>
+       <widget class="QWidget" name="widget_19" native="true">
+        <property name="geometry">
+         <rect>
+          <x>950</x>
+          <y>0</y>
+          <width>111</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_53">
+           <property name="text">
+            <string>Mirror control:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="mono_mirror_select_comboBox_2">
+           <item>
+            <property name="text">
+             <string>Exit_front</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Exit_side</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exit_toggle_btn">
+           <property name="text">
+            <string>switch mirror</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QTabWidget" name="tabWidget_plot">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>290</y>
+          <width>1472</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
+          <string>IV curve</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="PlotWidget" name="ui_plot_canva" native="true"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
+          <string>Mono plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QWidget" name="plotwidget" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_7">
+         <attribute name="title">
+          <string>Picoharp plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QWidget" name="picoharp_plot" native="true"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="widget_20" native="true">
+        <property name="geometry">
+         <rect>
+          <x>1060</x>
+          <y>0</y>
+          <width>121</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_18">
+         <item>
+          <widget class="QLabel" name="label_55">
+           <property name="text">
+            <string>Gratings control:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="mono_grating_select_comboBox_3">
+           <item>
+            <property name="text">
+             <string>Grating_1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Grating_2</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exit_toggle_btn_2">
+           <property name="text">
+            <string>switch grating</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_5">
@@ -1058,6 +1208,62 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </widget>
+       <widget class="QTabWidget" name="tabWidget_plot_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>290</y>
+          <width>1472</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_8">
+         <attribute name="title">
+          <string>IV curve</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="PlotWidget" name="ui_plot_canva_2" native="true"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_9">
+         <attribute name="title">
+          <string>Mono plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QWidget" name="plotwidget_2" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_10">
+         <attribute name="title">
+          <string>Picoharp plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QWidget" name="picoharp_plot_2" native="true"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -1123,8 +1329,8 @@ p, li { white-space: pre-wrap; }
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:9.75pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -1212,8 +1418,8 @@ p, li { white-space: pre-wrap; }
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:9.75pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:7.8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -1327,6 +1533,62 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
         </layout>
+       </widget>
+       <widget class="QTabWidget" name="tabWidget_plot_3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>290</y>
+          <width>1472</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_11">
+         <attribute name="title">
+          <string>IV curve</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_12">
+          <item>
+           <widget class="PlotWidget" name="ui_plot_canva_3" native="true"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_12">
+         <attribute name="title">
+          <string>Mono plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_13">
+          <item>
+           <widget class="QWidget" name="plotwidget_3" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_13">
+         <attribute name="title">
+          <string>Picoharp plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <item>
+           <widget class="QWidget" name="picoharp_plot_3" native="true"/>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_6">
@@ -1540,56 +1802,62 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </widget>
-      </widget>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="tabWidget_plot">
-      <property name="currentIndex">
-       <number>2</number>
-      </property>
-      <widget class="QWidget" name="tab_4">
-       <attribute name="title">
-        <string>IV curve</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
-        <item>
-         <widget class="PlotWidget" name="ui_plot_canva" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Mono plot</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QWidget" name="plotwidget" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_7">
-       <attribute name="title">
-        <string>Picoharp plot</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <item>
-         <widget class="QWidget" name="picoharp_plot" native="true"/>
-        </item>
-       </layout>
+       <widget class="QTabWidget" name="tabWidget_plot_4">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>290</y>
+          <width>1472</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_14">
+         <attribute name="title">
+          <string>IV curve</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <widget class="PlotWidget" name="ui_plot_canva_4" native="true"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_15">
+         <attribute name="title">
+          <string>Mono plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_16">
+          <item>
+           <widget class="QWidget" name="plotwidget_4" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_16">
+         <attribute name="title">
+          <string>Picoharp plot</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_17">
+          <item>
+           <widget class="QWidget" name="picoharp_plot_4" native="true"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -1601,7 +1869,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1494</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
