@@ -857,7 +857,7 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="exit_toggle_btn_2">
+          <widget class="QPushButton" name="grating_toggle_btn">
            <property name="text">
             <string>switch grating</string>
            </property>
