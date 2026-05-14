@@ -165,10 +165,12 @@ class Triax320:
         read_main_version = "z"
         if self.device_connected:
             self.device.write_raw(read_main_version.encode())
-            return print(self.device.read())
+            version = self.device.read()
+            print(version)
+            return version
         else:
             print("Device not connected")
-            return
+            return None
     # todo: check if the status is correct, and if the message is correct.
     def get_motor_status(self) -> str:
         """Get the status of the motor.
@@ -288,6 +290,9 @@ class Triax320:
         """
         if self.device_connected:
             current_width = self.check_slit_position(slit_num)
+            if current_width is None:
+                self.log_message_signal("Slit control error: could not read current slit position.")
+                return
             move_width = int(width) - current_width
             command = "k0," + str(slit_num) + "," + str(move_width) + "\r"
             print(command)
@@ -356,6 +361,7 @@ class Triax320:
 
         try:
         # Send the encoded string to the hardware
+<<<<<<< HEAD
             self.device.write_raw(command_string.encode())            
             message = self.device.read()
             if message == "o":
@@ -364,6 +370,16 @@ class Triax320:
             else:
                 self.signals.log_message_signal.emit(f"Mirror error")
                 return
+=======
+            self.device.write_raw(command_string.encode())
+        
+        # Read acknowledgement to clear the response buffer
+            _ = self.device.read()
+
+        # Mirror motors are mechanical; the manual suggests a delay
+            import time
+            time.sleep(2.0) 
+>>>>>>> a9c10d0d5424aa91a6e80e8478a49a67235478c0
         
         except Exception as e:
             print(f"Hardware communication error: {e}")
@@ -385,7 +401,7 @@ class Triax320:
         
             # Read response from hardware (typically 'o' for OK)
             response = self.device.read()
-            if "o" in response:
+            if response.strip() == "o":
                 self.log_message_signal(f"Grating changed to Position {position + 1}")
             else:
                 self.log_message_signal(f"Hardware response: {response}")

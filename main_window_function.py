@@ -1,5 +1,3 @@
-from calendar import month
-from turtledemo.penrose import start
 import random
 import fileIO
 import newport_1835c_serial
@@ -142,7 +140,7 @@ class PicoHarpHeatmapView(pg.GraphicsLayoutWidget):
             if N_points > 0:
                 idxs = np.linspace(0, N_points - 1, num=min(N_points, 10), dtype=int)
                 ticks = [(int(i), f"{self._x_coords[i]:.1f}") for i in idxs]
-                ax.setTicks([ticks])
+                self.p1.getAxis('bottom').setTicks([ticks])
             self.p1.setLabel('bottom', 'Wavelength', units='nm')
 
         elif x_values is not None:
@@ -151,7 +149,7 @@ class PicoHarpHeatmapView(pg.GraphicsLayoutWidget):
             if N_points > 0:
                 idxs = np.linspace(0, N_points - 1, num=min(N_points, 10), dtype=int)
                 ticks = [(int(i), str(self._x_coords[i])) for i in idxs]
-                ax.setTicks([ticks])
+                self.p1.getAxis('bottom').setTicks([ticks])
             self.p1.setLabel('bottom', 'Mono step')
 
         else:
@@ -177,9 +175,7 @@ class PicoHarpHeatmapView(pg.GraphicsLayoutWidget):
         arr = np.log1p(self.heat) if self._log_z else self.heat
         self.img.setImage(arr, autoLevels=(i == 0))
 
-        # right side: total counts / ms vs wavelength index
-        totals = self.heat.sum(axis=0) / max(1, tacq_ms)
-        self.total_curve.setData(x=self._x_coords[:i + 1], y=totals[:i + 1])
+        # total_curve removed (p2 plot is commented out)
 
 
     def _on_mouse(self, pos):
@@ -263,7 +259,7 @@ class MainWindow(QMainWindow):
 
         # Device state:
         self.stage_started = False
-        # self.spectrometer_connected = False
+        self.spectrometer_connected = False  # kept for legacy attribute checks
         self.stage_connected = False
         self.plotting_started = False
         # Track the current mode:
@@ -508,17 +504,21 @@ class MainWindow(QMainWindow):
         if not self.mono.device_connected:
             return
 
-    # 1. Force move to Side Exit (Position 1)
-        self.mono.set_exit_mirror(1) 
+        # 1. Force move to Side Exit (Position 1)
+        self.mono.set_exit_mirror(1)
         self.mono_and_power_meter_log("Initializing mirror to Side Exit...")
-        time.sleep(0.5) # Give hardware a moment to react
+        time.sleep(0.5)  # Give hardware a moment to react
 
-    # 2. Query to confirm
-        self.mono.ser.write(b"w\r")
-        time.sleep(0.1)
-        response = self.mono.ser.read_all().decode().strip()
+        # 2. Query to confirm using pyvisa device (not self.mono.ser which doesn't exist)
+        try:
+            self.mono.device.write_raw(b"w\r")
+            time.sleep(0.1)
+            response = self.mono.device.read().strip()
+        except Exception as e:
+            self.mono_and_power_meter_log(f"Mirror sync query failed: {e}")
+            response = ""
 
-    # 3. Update UI based on confirmed truth
+        # 3. Update UI based on confirmed truth
         if "1" in response:
             self.ui.Mirror_current_position.setText("Side")
             self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
@@ -614,35 +614,20 @@ class MainWindow(QMainWindow):
         self.ui.mono_powermeter_log.append(f"{timestamp}: "+ message)
 
     def connect_spectrometer(self):
-        # # print("Connecting spectrometer")
-        # # try:
-        # self.plot_data = PlotData(self.vid, self.pid, self.dll_path, self.plot_widget)
-        # if self.plot_data.spectrometer.get_device_amount() == 0:
-        #     self.ui.spec_status.append("Connection Error", "No spectrometer devices found.")
-        #     return
-        # # # except Exception as e:
-        # # QMessageBox.critical(self, "Connection Error", f"Failed to connect spectrometer: {e}")
-        # self.ui.spec_status.append("Spectrometer connected successfully.")
-        # print(f"{self.plot_data.spectrometer.device_handle} connected successfully.")
-        # self.spectrometer_connected = True
-        # self.wavelengths = self.plot_data.spectrometer.get_wavelength()
-        # self.current_intensity_data = self.plot_data.get_spectrometer_data(self.integration_time)
-        # self.plot_data.init_cache()
-        # self.ui.file_location_label.setText(f"Save location: \n {self.plot_data.default_save_dir}")
-       if self.mono.device_connected:
-        self.mono_and_power_meter_log("Triax connected. Setting default mirror to Side...")
-        
-        # 1. MOVE TO SIDE DEFAULT (o1 command)
-        self.mono.set_exit_mirror(1) 
-        self.mono.current_mirror_pos = 1
-        
-        # 2. UPDATE UI TO MATCH
-        self.ui.Mirror_current_position.setText("Side")
-        self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
-        
-        # Optional: Ask the hardware to confirm it arrived
-        self.sync_mirror_from_hardware()
-        pass
+        """Set the default mirror to Side Exit when monochromator is connected."""
+        if self.mono.device_connected:
+            self.mono_and_power_meter_log("Triax connected. Setting default mirror to Side...")
+
+            # 1. MOVE TO SIDE DEFAULT (e0 command)
+            self.mono.set_exit_mirror(1)
+            self.mono.current_mirror_pos = 1
+
+            # 2. UPDATE UI TO MATCH
+            self.ui.Mirror_current_position.setText("Side")
+            self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
+
+            # Optional: Ask the hardware to confirm it arrived
+            self.sync_mirror_from_hardware()
 
     @pyqtSlot()
     def set_reference_plot(self):
@@ -1537,16 +1522,10 @@ class MainWindow(QMainWindow):
         # 1. Force stop the motor hardware
         self.mono.motor_stop()
 
-        # 2. Set stop flag for the scan thread
-        if not self.mono_stop_flag.is_set():
-            self.mono_stop_flag.set()
+        # 2. Do NOT join the thread here — that would block the UI.
+        # The stop flags above will cause the worker threads to exit cleanly.
 
-        # 3. Join scan thread only if we're not in it
-        if hasattr(self, 'thread') and self.thread.is_alive():
-            if threading.current_thread() != self.thread:
-                self.thread.join()
-
-        # 4. Notify in GUI
+        # 3. Notify in GUI
         self.mono_and_power_meter_log("Ultimate stop: motor and scan forcibly stopped.")
 
     def start_mono_scan(self):
@@ -1576,10 +1555,8 @@ class MainWindow(QMainWindow):
     def stop_mono_scan(self):
         if not self.mono_stop_flag.is_set():
             self.mono_stop_flag.set()
-            # No self thread.join() here, as it will block the UI.
-            if threading.current_thread() != self.thread:
-                self.thread.join()
-            self.mono_and_power_meter_log("Monochromator scan stopped.")
+            # Do NOT call thread.join() here — it would block the UI thread.
+            self.mono_and_power_meter_log("Monochromator scan stop requested.")
         else:
             self.mono_and_power_meter_log("Monochromator scan already stopped.")
 
@@ -2165,11 +2142,7 @@ class MainWindow(QMainWindow):
         # set the stop flag to stop the scan:
         self.ui_signal.mono_powermeter_log_signal.emit("Stopping monochromator scan...")
         self.mono_stop_flag.set()
-        # No self thread.join() here, as it will block the UI.
-        if threading.current_thread() != self.thread:
-            self.thread.join()
-            self.mono_and_power_meter_log("Monochromator scan stopped.")
-            # self.ui_signal.mono_powermeter_log_signal.emit("Monochromator scan stopped.")
+        # Do NOT call thread.join() here — it would block the UI thread.
 
     def ui_start_mono_iv_curve_meas(self):
         """Start the monochromator IV curve measurement in a separate thread."""
@@ -2902,10 +2875,8 @@ class MainWindow(QMainWindow):
         """Stop the monochromator and pico scan."""
         if not self.pico_meas_stop_flag.is_set():
             self.pico_meas_stop_flag.set()
-            # No self thread.join() here, as it will block the UI.
-            if threading.current_thread() != self.thread:
-                self.thread.join()
-            print("PICO/Monochromator scan stopped.")
+            # Do NOT call thread.join() here — it would block the UI thread.
+            print("PICO/Monochromator scan stop requested.")
         else:
             print("PICO/Monochromator scan already stopped.")
 
@@ -2916,7 +2887,7 @@ class MainWindow(QMainWindow):
 
     def update_pico_init_label(self, inited: bool):
         """Update the picoharp init status label in the UI."""
-        self.picoharp_init_lab.setText("Yes" if inited else "No")
+        self.ui.picoharp_init_status_lab.setText("Yes" if inited else "No")
 
     def update_pico_labels(self,
                            binning: int = 0,
