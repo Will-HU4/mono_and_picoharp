@@ -137,6 +137,8 @@ class Triax320:
             # Check if the motor is initialized:
             # todo: time.sleep removed, check if it works properly, and did not block the countdown at GUI.
             # time.sleep(100)
+            command_string = "e0\r"
+            self.device.write_raw(command_string.encode())
             message = self.device.read()
             if message == "o":
                 print("Motor initialized.")
@@ -354,11 +356,14 @@ class Triax320:
 
         try:
         # Send the encoded string to the hardware
-            self.device.write_raw(command_string.encode())
-        
-        # Mirror motors are mechanical; the manual suggests a delay
-            import time
-            time.sleep(2.0) 
+            self.device.write_raw(command_string.encode())            
+            message = self.device.read()
+            if message == "o":
+                self.signals.log_message_signal.emit(f"Mirror moved to posiion")
+                return
+            else:
+                self.signals.log_message_signal.emit(f"Mirror error")
+                return
         
         except Exception as e:
             print(f"Hardware communication error: {e}")
@@ -366,13 +371,13 @@ class Triax320:
     def set_grating(self, position: int):
         """
         Changes the grating position.
-        :param position: 0 for Grating 1 (a0), 1 for Grating 2 (b0)
+        :param position: 0 for Grating 1 (b0), 1 for Grating 2 (a0)
         """
         if not self.device_connected:
             self.log_message_signal("Device not connected")
             return
         # a0 is position 0, b0 is position 1
-        command = "a0\r" if position == 0 else "b0\r"
+        command = "b0\r" if position == 0 else "a0\r"
     
         try:
             print(f"Sending grating command: {command.strip()}")

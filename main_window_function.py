@@ -323,7 +323,6 @@ class MainWindow(QMainWindow):
         self.ui_functions_init()
         self.ui_set_labels()
         self.signals_connect()
-        self.init_ui_connections()
         self.initialize_ui_mode()
 
         # Start the power meter readings timer with a 500 ms interval
@@ -397,6 +396,7 @@ class MainWindow(QMainWindow):
         self.mono.signals.mono_start_init_signal.connect(self.show_initialization_dialog)
         self.mono.signals.mono_initialized_signal.connect(self.close_mono_init_dialog)
         self.mono.signals.mono_init_failed_signal.connect(self.close_mono_init_dialog)
+        self.ui.grating_toggle_btn.clicked.connect(self.handle_grating_switch)
 
         # power meter signals:
         self.power_meter.signals.log_message_signal.connect(self.mono_and_power_meter_log)
@@ -453,6 +453,8 @@ class MainWindow(QMainWindow):
         self.ui.picoharp_disconnect_button.clicked.connect(self.ui_disconnect_picoharp)
         self.ui.picoharp_start_mono_button.clicked.connect(self.start_pico_mono_scan)
         self.ui.picoharp_stop_mono_button.clicked.connect(self.stop_pico_mono_scan)
+        self.ui.exit_toggle_btn.clicked.connect(self.handle_mirror_switch)
+        self.ui.grating_toggle_btn.clicked.connect(self.handle_grating_switch)
 
     def connect_Qaction_signals(self):
         """Connect the QAction signals to their respective methods.
@@ -477,16 +479,7 @@ class MainWindow(QMainWindow):
         self.ui.actionEnter_main_program.triggered.connect(self.mono_enter_main_program_ui)
         self.ui.actionGet_current_position.triggered.connect(self.set_mono_pos_label)
         self.ui.actionCheck_limit.triggered.connect(self.ui_check_motor_limit)
-        self.ui.actionCheck_motor_status.triggered.connect(self.ui_check_motor_status)
-        # In connect_Qaction_signals:
-        self.ui.actionConnect_monochromator.triggered.connect(self.mono.connect_device)
-        # Add this line to sync immediately after connection
-        self.ui.actionConnect_monochromator.triggered.connect(self.sync_mirror_from_hardware)
-    
-    def init_ui_connections(self):
-    # This connects the UI button object to the logic function below
-        self.ui.exit_toggle_btn.clicked.connect(self.handle_mirror_switch)
-        self.ui.grating_toggle_btn.clicked.connect(self.handle_grating_switch)
+        
     
     def handle_mirror_switch(self):
         if not self.mono.device_connected:
@@ -604,19 +597,15 @@ class MainWindow(QMainWindow):
         self.ui.mono_grating_select_comboBox_3.setCurrentIndex(0)
     
     def handle_grating_switch(self):
-        """Triggered by exit_toggle_btn_2 to move the grating turret."""
+        """Triggered by grating_toggle_btn to move the turret."""
         if not self.mono.device_connected:
             self.mono_and_power_meter_log("Error: Monochromator not connected.")
             return
 
-        if not self.mono_stop_flag.is_set():
-            self.mono_and_power_meter_log("Cannot switch gratings during active scan!")
-            return
-
-        # 0 = Position 1 (a0), 1 = Position 2 (b0)
+        # Use index: 0 for Grating 1 (a0), 1 for Grating 2 (b0)
         target_pos = self.ui.mono_grating_select_comboBox_3.currentIndex()
-    
-        self.mono_and_power_meter_log(f"Moving to Grating {target_pos + 1}...")
+        
+        self.mono_and_power_meter_log(f"Command sent: Moving to Grating {target_pos + 1}")
         self.mono.set_grating(target_pos)
 
     def mono_and_power_meter_log(self, message):
