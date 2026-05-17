@@ -361,7 +361,6 @@ class Triax320:
 
         try:
         # Send the encoded string to the hardware
-<<<<<<< HEAD
             self.device.write_raw(command_string.encode())            
             message = self.device.read()
             if message == "o":
@@ -370,40 +369,52 @@ class Triax320:
             else:
                 self.signals.log_message_signal.emit(f"Mirror error")
                 return
-=======
-            self.device.write_raw(command_string.encode())
-        
-        # Read acknowledgement to clear the response buffer
-            _ = self.device.read()
-
-        # Mirror motors are mechanical; the manual suggests a delay
-            import time
-            time.sleep(2.0) 
->>>>>>> a9c10d0d5424aa91a6e80e8478a49a67235478c0
         
         except Exception as e:
             print(f"Hardware communication error: {e}")
         
     def set_grating(self, position: int):
         """
-        Changes the grating position.
-        :param position: 0 for Grating 1 (b0), 1 for Grating 2 (a0)
+        執行特定的相對位移序列來切換到下一個光柵。
+        :param position: 目標光柵索引 (0, 1, 2)
         """
         if not self.device_connected:
-            self.log_message_signal("Device not connected")
+            self.signals.log_message_signal.emit("Device not connected")
             return
-        # a0 is position 0, b0 is position 1
-        command = "b0\r" if position == 0 else "a0\r"
-    
+
+        # 1. 判斷是否需要切換
+        # 如果要求的目標位置就是目前位置，則不動作
+        if position == self.curr_grating:
+            self.signals.log_message_signal.emit(f"already at grating{position}")
+            return
+
+        # 2. 計算需要執行幾次「切換序列」
+        # 例如：從 2 到 0，或者從 0 到 1
+        num_switches = (position - self.curr_grating) % 3
+
         try:
-            print(f"Sending grating command: {command.strip()}")
-            self.device.write_raw(command.encode())
-        
-            # Read response from hardware (typically 'o' for OK)
-            response = self.device.read()
-            if response.strip() == "o":
-                self.log_message_signal(f"Grating changed to Position {position + 1}")
-            else:
-                self.log_message_signal(f"Hardware response: {response}")
+            for i in range(num_switches):
+                current_idx = (self.curr_grating + i) % 3
+                next_idx = (self.curr_grating + i + 1) % 3
+                
+                self.signals.log_message_signal.emit(f"changing grating from{current_idx} to {next_idx}...")
+
+                # --- 你指定的標準動作序列 ---
+                # A. 取得當前位置並推到右極限
+                current_pos = self.get_motor_position()
+                to_the_right_limit = 750000 - current_pos
+                self.move_motor_relative(to_the_right_limit)
+                
+                # B. 回撥 10 萬步
+                self.move_motor_relative(-100000)
+                
+                # C. 前進 50 萬步抵達下一個光柵
+                self.move_motor_relative(500000)
+                # -------------------------
+
+            # 3. 更新最終狀態
+            self.curr_grating = position
+            self.signals.log_message_signal.emit(f"transition complete currently at grating {self.curr_grating}")
+
         except Exception as e:
-            self.log_message_signal(f"Grating switch error: {e}")
+            self.signals.log_message_signal.emit(f"grating transition error: {e}")
