@@ -1144,6 +1144,9 @@ class MainWindow(QMainWindow):
             self.mapping_coefficients = (None, None)
             self.ui.start_mono_pos_label.setText(">=-250000")
             self.ui.end_mono_pos_label.setText("<=750000")
+            #For triax 320
+            #self.ui.start_mono_pos_label.setText(">=0")
+            #self.ui.end_mono_pos_label.setText("<=32000")
 
     def toggle_input_mode(self, use_wavelength):
         """toggle step size from using steps (textbox) or wavelength (spinbox) as input"""
@@ -1175,6 +1178,8 @@ class MainWindow(QMainWindow):
             self.ui.unit_label_4.setText("step")
             self.toggle_input_mode(use_wavelength=False)
             self.ui.position_limit_label.setText("-250000 <= step <= 750000")
+            #For triax 320
+            #self.ui.position_limit_label.setText("0 <= step <= 32000")
 
     def validate_mono_parameters(self, step_start, step_end, step_size, test_num):
         """validate monochromator parameters to fit within safety limits"""
@@ -1193,6 +1198,12 @@ class MainWindow(QMainWindow):
         if step_end > 750000:
             self.mono_and_power_meter_log("End position must be 750000 or less.")
             return False
+        
+        #For triax 320
+        #if step_end > 32000:
+        #    self.mono_and_power_meter_log("End position must be 32000 or less.")
+        #    return False
+
         return True
 
     def validate_x_values(self):
@@ -1202,6 +1213,8 @@ class MainWindow(QMainWindow):
             return False
 
         invalid = [x for x in self.x_values if not isinstance(x, int) or x < -250000 or x > 750000]
+        #For triax 320
+        #invalid = [x for x in self.x_values if not isinstance(x, int) or x < 0 or x > 32000]
 
         if invalid:
             self.mono_and_power_meter_log(f"Invalid x_values: {invalid}")
@@ -1260,6 +1273,11 @@ class MainWindow(QMainWindow):
             # check if steps are within range
             if any(step < -250000 or step > 750000 for step in unique_steps):
                 self.mono_and_power_meter_log("Computed step out of range (-250000 to 750000).")
+                return False
+            
+            #For traix 320
+            #if any(step < 0 or step > 32000 for step in unique_steps):
+                self.mono_and_power_meter_log("Computed step out of range (0 to 32000).")
                 return False
 
             # save to attributes
@@ -1374,6 +1392,9 @@ class MainWindow(QMainWindow):
                 return
             # double check the parameters are correct range
             invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
+            #For triax 320
+            #invalid_steps = [s for s in self.x_values if s < 0 or s > 32000]
+
             if invalid_steps:
                 self.mono_and_power_meter_log(f"Invalid steps detected: {invalid_steps}")
                 return
@@ -1766,7 +1787,9 @@ class MainWindow(QMainWindow):
                 return
 
         # if position within range send motor to absolute position
-        if isinstance(position, int) and -250000 <= position <= 750000:
+        if isinstance(position, int) and -250000 <= position <= 750000:\
+        #For triax 320
+        #if isinstance(position, int) and 0 <= position <= 32000:    
             try:
                 # Get current position of the motor
                 current_pos = self.mono.get_motor_position()
@@ -1781,6 +1804,8 @@ class MainWindow(QMainWindow):
                 self.mono_and_power_meter_log(f"Failed to move motor: {e}")
         else:
             self.mono_and_power_meter_log("Target step must be between -250000 and 750000.")
+            #For triax 320
+            #self.mono_and_power_meter_log("Target step must be between 0 and 32000.")
             return
 
     def ui_check_motor_limit(self):
@@ -1970,6 +1995,9 @@ class MainWindow(QMainWindow):
 
             # double check the parameters are correct range
             invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
+            #For triax 320
+            #invalid_steps = [s for s in self.x_values if s < -0 or s > 32000]
+            
             if invalid_steps:
                 # self.mono_and_power_meter_log(f"Invalid steps detected: {invalid_steps}")
                 self.ui_signal.mono_powermeter_log_signal.emit(f"Invalid steps detected: {invalid_steps}")
@@ -2207,6 +2235,9 @@ class MainWindow(QMainWindow):
 
         # double check the mono parameters are correct range
         invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
+        #For triax 320
+        #invalid_steps = [s for s in self.x_values if s < -0 or s > 32000]
+
         if invalid_steps:
             # self.mono_and_power_meter_log(f"Invalid steps detected: {invalid_steps}")
             self.ui_signal.mono_powermeter_log_signal.emit(f"Invalid steps detected: {invalid_steps}")
@@ -2660,6 +2691,9 @@ class MainWindow(QMainWindow):
 
         # 1) Check mono steps validity
         invalid_steps = [s for s in self.x_values if s < -250000 or s > 750000]
+        #For triax 320
+        #invalid_steps = [s for s in self.x_values if s < -0 or s > 32000]
+
         if invalid_steps:
             print(f"Invalid MONO steps detected: {invalid_steps}")
             self.pico_meas_stop_flag.set()
