@@ -392,7 +392,6 @@ class MainWindow(QMainWindow):
         self.mono.signals.mono_start_init_signal.connect(self.show_initialization_dialog)
         self.mono.signals.mono_initialized_signal.connect(self.close_mono_init_dialog)
         self.mono.signals.mono_init_failed_signal.connect(self.close_mono_init_dialog)
-        self.ui.grating_toggle_btn.clicked.connect(self.handle_grating_switch)
 
         # power meter signals:
         self.power_meter.signals.log_message_signal.connect(self.mono_and_power_meter_log)
@@ -604,8 +603,8 @@ class MainWindow(QMainWindow):
 
         # Use index: 0 for Grating 1 (a0), 1 for Grating 2 (b0)
         target_pos = self.ui.mono_grating_select_comboBox_3.currentIndex()
-        
-        self.mono_and_power_meter_log(f"Command sent: Moving to Grating {target_pos + 1}")
+        self.mono_and_power_meter_log(f"Move to grating {target_pos}")
+
         self.mono.set_grating(target_pos)
 
     def mono_and_power_meter_log(self, message):

@@ -24,6 +24,7 @@ class Triax320:
         self.device_connected = False
         self.motor_initialized = False
         self.message = None
+        self.curr_grating = 0
 
         # create signale object for connecting signals to GUI
         self.signals = MonoSignals()
@@ -402,14 +403,15 @@ class Triax320:
                 # --- 你指定的標準動作序列 ---
                 # A. 取得當前位置並推到右極限
                 current_pos = self.get_motor_position()
-                to_the_right_limit = 750000 - current_pos
+                to_the_right_limit = -250000 - current_pos
                 self.move_motor_relative(to_the_right_limit)
-                
+                self.wait_motor_idle()
                 # B. 回撥 10 萬步
-                self.move_motor_relative(-100000)
-                
+                self.move_motor_relative(1000000)
+                self.wait_motor_idle()
                 # C. 前進 50 萬步抵達下一個光柵
-                self.move_motor_relative(500000)
+                self.move_motor_relative(-500000)
+                self.wait_motor_idle()
                 # -------------------------
 
             # 3. 更新最終狀態
@@ -418,3 +420,16 @@ class Triax320:
 
         except Exception as e:
             self.signals.log_message_signal.emit(f"grating transition error: {e}")
+    
+        
+    def wait_motor_idle(self, timeout=10):
+        elapsed = 0
+        while elapsed < timeout:
+            status = self.get_motor_status()
+            if status == "idle":
+                return True
+            elif status in ("error", "disconnected"):
+                return False
+            time.sleep(0.2)
+            elapsed += 0.2
+        return False
