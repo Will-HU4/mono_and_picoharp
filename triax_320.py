@@ -132,7 +132,7 @@ class Triax320:
             # send start signal to ui:
             self.signals.mono_start_init_signal.emit()
             # Set the timeout to 100 seconds for initialization(required by manual):
-            self.device.timeout = 100000
+            self.device.timeout = 300000
             init_motor = "A"
             self.device.write_raw(init_motor)
             # Check if the motor is initialized:
@@ -422,7 +422,7 @@ class Triax320:
             self.signals.log_message_signal.emit(f"grating transition error: {e}")
     
         
-    def wait_motor_idle(self, timeout=10):
+    def wait_motor_idle(self, timeout=50):
         elapsed = 0
         while elapsed < timeout:
             status = self.get_motor_status()
