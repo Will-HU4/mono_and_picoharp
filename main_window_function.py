@@ -1617,6 +1617,7 @@ class MainWindow(QMainWindow):
 
             # todo: make init into another thread (solved, check if working)
             init_thread = threading.Thread(target=self.mono.init_motor)
+            port_text = "Side"
             init_thread.start()
 
     def show_initialization_dialog(self):
