@@ -201,6 +201,35 @@ class Triax320:
         else:
             print("Device not connected")
             return 'disconnected'
+        
+    def get_mirror_motor_status(self) -> str:
+        """Get the status of the motor.
+        :return: 'busy', 'idle', 'unknown', 'error' or 'disconnected'"""
+        read_motor_status = "l"
+        if self.device_connected:
+            self.device.write_raw(read_motor_status.encode())
+            message = self.device.read()
+            # remove later:
+            print(f"Message: {message}")
+            # ----------------
+            # process message:
+            if message[0] == "o":
+                print("Message received.")
+                if message[1] == "q":
+                    print(f"Busy status: {message[1]}, motor is busy.")
+                    return 'busy'
+                elif message[1] == "z":
+                    print(f"Busy status: {message[1]}, motor is idle.")
+                    return 'idle'
+                else:
+                    print(f"Unknown status: {message[1]}")
+                return 'unknown'
+            else:
+                print(f"Unknown message: {message}")
+                return 'error'
+        else:
+            print("Device not connected")
+            return 'disconnected'
 
     def get_motor_position(self, motor_number: str = "0") -> Optional[int]:
         """Get the current position of the motor.
@@ -362,10 +391,12 @@ class Triax320:
 
         try:
         # Send the encoded string to the hardware
-            self.device.write_raw(command_string.encode())            
-            message = self.device.read()
-            if message == "o":
-                self.signals.log_message_signal.emit(f"Mirror moved to posiion")
+            status = self.get_mirror_motor_status()
+            if status == "idle":
+                self.signals.log_message_signal.emit(f"Mirror moved to postion")
+                return
+            elif status == "busy":
+                self.signals.log_message_signal.emit(f"Mirror moving to postion")
                 return
             else:
                 self.signals.log_message_signal.emit(f"Mirror error")
@@ -405,13 +436,13 @@ class Triax320:
                 current_pos = self.get_motor_position()
                 to_the_right_limit = -250000 - current_pos
                 self.move_motor_relative(to_the_right_limit)
-                self.wait_motor_idle()
+                self.wait_motor_idle(motor_type="grating")
                 # B. 回撥 10 萬步
                 self.move_motor_relative(1000000)
-                self.wait_motor_idle()
+                self.wait_motor_idle(motor_type="grating")
                 # C. 前進 50 萬步抵達下一個光柵
                 self.move_motor_relative(-500000)
-                self.wait_motor_idle()
+                self.wait_motor_idle(motor_type="grating")
                 # -------------------------
 
             # 3. 更新最終狀態
@@ -422,14 +453,26 @@ class Triax320:
             self.signals.log_message_signal.emit(f"grating transition error: {e}")
     
         
-    def wait_motor_idle(self, timeout=50):
+    def wait_motor_idle(self, motor_type: str, timeout=50):
         elapsed = 0
-        while elapsed < timeout:
-            status = self.get_motor_status()
-            if status == "idle":
-                return True
-            elif status in ("error", "disconnected"):
-                return False
-            time.sleep(0.2)
-            elapsed += 0.2
+        if motor_type == "grating":
+            while elapsed < timeout:
+                status = self.get_motor_status()
+                if status == "idle":
+                    return True
+                elif status in ("error", "disconnected"):
+                    return False
+                time.sleep(0.2)
+                elapsed += 0.2
+
+        elif motor_type == "mirror":
+            while elapsed < timeout:
+                status = self.get_mirror_motor_status() 
+                if status == "idle":
+                    return True
+                elif status in ("error", "disconnected"):
+                    return False
+                time.sleep(0.2)
+                elapsed += 0.2
+
         return False
