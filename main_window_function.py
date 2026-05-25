@@ -24,39 +24,57 @@ import picoharp300_controller
 
 POWERMETER_SAMPLES = 5
 
+from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtCore import Qt
+
 def get_dark_palette():
     palette = QPalette()
-    palette.setColor(QPalette.ColorRole.Window, QColor(127, 127, 127))
+    # 真正的深色模式背景 (深灰/接近黑)
+    palette.setColor(QPalette.ColorRole.Window, QColor(30, 30, 30))
     palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-    palette.setColor(QPalette.ColorRole.Base, QColor(127, 127, 127))
-    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(127, 53, 53))
-    palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.gray)
-    palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.green)
+    
+    # 輸入框、列表的背景 (稍微淺一點的深灰，拉出立體感)
+    palette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
+    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(55, 55, 55)) # 微調交替色
+    
+    # 提示框：黑底白字或黑底黃字
+    palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(10, 10, 10))
+    palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 215, 0)) # 黃色字很適合深色提示
+    
     palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
-    palette.setColor(QPalette.ColorRole.Button, QColor(127, 127, 127))
+    
+    # 按鈕顏色
+    palette.setColor(QPalette.ColorRole.Button, QColor(50, 50, 50))
     palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
-    palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.white)
+    palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    
+    # 科技藍高亮
     palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
     palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-    palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
+    palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white) # 選取時字變白比較好讀
     return palette
 
 def get_light_palette():
     palette = QPalette()
-    palette.setColor(QPalette.ColorRole.Window, Qt.GlobalColor.white)
+    palette.setColor(QPalette.ColorRole.Window, QColor(240, 240, 240))
     palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.black)
     palette.setColor(QPalette.ColorRole.Base, Qt.GlobalColor.white)
-    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(245, 245, 245))
-    palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.black)
+    palette.setColor(QPalette.ColorRole.AlternateBase, QColor(233, 233, 233))
+    palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(255, 255, 225))
     palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.black)
     palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.black)
-    palette.setColor(QPalette.ColorRole.Button, Qt.GlobalColor.white)
+    palette.setColor(QPalette.ColorRole.PlaceholderText, QColor(120, 120, 120)) # 修正輸入框提示字的白字殘留
+    palette.setColor(QPalette.ColorRole.Button, QColor(240, 240, 240))
     palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.black)
-    palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.black)
+    palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    palette.setColor(QPalette.ColorRole.Midlight, QColor(227, 227, 227))
+    palette.setColor(QPalette.ColorRole.Mid, QColor(160, 160, 160))
+    palette.setColor(QPalette.ColorRole.Dark, QColor(115, 115, 115))
+    palette.setColor(QPalette.ColorRole.Shadow, QColor(105, 105, 105))
     palette.setColor(QPalette.ColorRole.Link, QColor(0, 120, 215))
     palette.setColor(QPalette.ColorRole.Highlight, QColor(0, 120, 215))
     palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
-    palette.setColor(QPalette.ColorRole.Accent, Qt.GlobalColor.blue)
+    
     return palette
 
 # picoharp heatmap plot class:
@@ -457,7 +475,6 @@ class MainWindow(QMainWindow):
         self.ui.actionDark_Light_mode.triggered.connect(self.toggle_palette)
         self.ui.actionConnect_stage.triggered.connect(self.connect_stage)
         self.ui.actionClose_stage.triggered.connect(self.close_connection)
-        self.ui.actionConnect_spectrometer.triggered.connect(self.connect_spectrometer)
         self.ui.actionClose_spectrometer.triggered.connect(self.close_spectrometer)
         self.ui.actionChange_data_directory.triggered.connect(self.change_save_location)
         self.ui.actionExport.triggered.connect(self.export_csv)
@@ -494,11 +511,11 @@ class MainWindow(QMainWindow):
 
     # Update the "Current Position" label to match the movement
         port_text = "Side" if target_pos == 1 else "Front"
-        self.ui.Mirror_current_position.setText(port_text)
+        self.ui.Mirror_current_position_label.setText(f'Mirror exit: {port_text}')
     
         self.mono_and_power_meter_log(f"Mirror command sent: Moving to {port_text} Exit.")
 
-    def sync_mirror_from_hardware(self):
+    '''def sync_mirror_from_hardware(self):
         """Force hardware to Side Exit on connect and verify."""
         if not self.mono.device_connected:
             return
@@ -519,12 +536,12 @@ class MainWindow(QMainWindow):
 
         # 3. Update UI based on confirmed truth
         if "1" in response:
-            self.ui.Mirror_current_position.setText("Side")
+            self.ui.Mirror_current_position_label.setText(f'Mirror exit: {port_text}')
             self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
             self.mono_and_power_meter_log("Hardware Check: Side Exit confirmed.")
         else:
-            self.ui.Mirror_current_position.setText("Front")
-            self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(0)
+            self.ui.Mirror_current_position_label.setText("Front")
+            self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(0)'''
 
     def setup_motor_status_timer(self, timer_interval=1000, max_wait=10000):
         """Set up the timer in __init__ to check the mono motor status.
@@ -592,7 +609,8 @@ class MainWindow(QMainWindow):
         self.ui.current_filename_label.setText(f"{self.file.file_name}")
     
         self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1) # Visual index for Side
-        self.ui.Mirror_current_position.setText("Side")
+        self.ui.Mirror_current_position_label.setText(f'Mirror exit: Side')
+        self.ui.Grating_current_position_label.setText(f'Grating : 1')
         self.ui.mono_grating_select_comboBox_3.setCurrentIndex(0)
     
     def handle_grating_switch(self):
@@ -603,6 +621,7 @@ class MainWindow(QMainWindow):
 
         # Use index: 0 for Grating 1 (a0), 1 for Grating 2 (b0)
         target_pos = self.ui.mono_grating_select_comboBox_3.currentIndex()
+        self.ui.Grating_current_position_label.setText(f'Grating : {target_pos}')
         self.mono_and_power_meter_log(f"Move to grating {target_pos}")
 
         self.mono.set_grating(target_pos)
@@ -612,7 +631,7 @@ class MainWindow(QMainWindow):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.ui.mono_powermeter_log.append(f"{timestamp}: "+ message)
 
-    def connect_spectrometer(self):
+    '''def connect_spectrometer(self):
         """Set the default mirror to Side Exit when monochromator is connected."""
         if self.mono.device_connected:
             self.mono_and_power_meter_log("Triax connected. Setting default mirror to Side...")
@@ -622,11 +641,11 @@ class MainWindow(QMainWindow):
             self.mono.current_mirror_pos = 1
 
             # 2. UPDATE UI TO MATCH
-            self.ui.Mirror_current_position.setText("Side")
+            self.ui.Mirror_current_position_label.setText("Side")
             self.ui.mono_mirror_select_comboBox_2.setCurrentIndex(1)
 
             # Optional: Ask the hardware to confirm it arrived
-            self.sync_mirror_from_hardware()
+            self.sync_mirror_from_hardware()'''
 
     @pyqtSlot()
     def set_reference_plot(self):
@@ -956,7 +975,9 @@ class MainWindow(QMainWindow):
 
     def toggle_palette(self):
         """Change GUI color mode"""
+        app = QApplication.instance()
         if self.is_dark_mode:
+            app.setStyle("Fusion")
             QApplication.instance().setPalette(get_light_palette())
             self.ui.centralwidget.setStyleSheet("background-color: white;")
             self.ui.menubar.setStyleSheet("""
@@ -994,6 +1015,7 @@ class MainWindow(QMainWindow):
                         }
                     """)
         else:
+            app.setStyle("Fusion")
             QApplication.instance().setPalette(get_dark_palette())
             self.ui.centralwidget.setStyleSheet("background-color: rgb(35, 35, 35);")
             self.ui.menubar.setStyleSheet("""

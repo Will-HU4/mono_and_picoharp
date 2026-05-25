@@ -392,6 +392,7 @@ class Triax320:
         try:
         # Send the encoded string to the hardware
             status = self.get_mirror_motor_status()
+
             if status == "idle":
                 self.signals.log_message_signal.emit(f"Mirror moved to postion")
                 return
@@ -417,7 +418,7 @@ class Triax320:
         # 1. 判斷是否需要切換
         # 如果要求的目標位置就是目前位置，則不動作
         if position == self.curr_grating:
-            self.signals.log_message_signal.emit(f"already at grating{position}")
+            self.signals.log_message_signal.emit(f"already at grating{position + 1}")
             return
 
         # 2. 計算需要執行幾次「切換序列」
@@ -447,7 +448,7 @@ class Triax320:
 
             # 3. 更新最終狀態
             self.curr_grating = position
-            self.signals.log_message_signal.emit(f"transition complete currently at grating {self.curr_grating}")
+            self.signals.log_message_signal.emit(f"transition complete currently at grating {self.curr_grating + 1}")
 
         except Exception as e:
             self.signals.log_message_signal.emit(f"grating transition error: {e}")

@@ -27,21 +27,9 @@ from PyQt6.QtWidgets import QApplication
 from main_window_function import MainWindow
 
 if __name__ == "__main__":
-    # 1. Setup environment
-    # setup_visa_paths()
 
-    # 2. Initialize Application
     app = QApplication(sys.argv)
-    
-    # 3. SET DARK MODE DEFAULT
-    # Fusion style is required for custom palettes to work properly on Windows
-    app.setStyle("Fusion") 
-    
-    # Use the static method from your MainWindow class
-    from main_window_function import get_dark_palette
-    app.setPalette(get_dark_palette())
-    
-    # 4. Launch Window
+
     main_window = MainWindow()
     main_window.show()
     
