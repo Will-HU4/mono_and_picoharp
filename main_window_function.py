@@ -28,33 +28,32 @@ from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtCore import Qt
 
 def get_dark_palette():
+
     palette = QPalette()
     # 真正的深色模式背景 (深灰/接近黑)
     palette.setColor(QPalette.ColorRole.Window, QColor(30, 30, 30))
     palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-    
     # 輸入框、列表的背景 (稍微淺一點的深灰，拉出立體感)
     palette.setColor(QPalette.ColorRole.Base, QColor(45, 45, 45))
     palette.setColor(QPalette.ColorRole.AlternateBase, QColor(55, 55, 55)) # 微調交替色
-    
     # 提示框：黑底白字或黑底黃字
     palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(10, 10, 10))
     palette.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 215, 0)) # 黃色字很適合深色提示
-    
     palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
-    
     # 按鈕顏色
     palette.setColor(QPalette.ColorRole.Button, QColor(50, 50, 50))
     palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
     palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
-    
     # 科技藍高亮
     palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
     palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
     palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white) # 選取時字變白比較好讀
     return palette
 
+
+
 def get_light_palette():
+
     palette = QPalette()
     palette.setColor(QPalette.ColorRole.Window, QColor(240, 240, 240))
     palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.black)
@@ -74,7 +73,7 @@ def get_light_palette():
     palette.setColor(QPalette.ColorRole.Link, QColor(0, 120, 215))
     palette.setColor(QPalette.ColorRole.Highlight, QColor(0, 120, 215))
     palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
-    
+
     return palette
 
 # picoharp heatmap plot class:
@@ -265,6 +264,88 @@ class UiSignal(QObject):
 
 
 class MainWindow(QMainWindow):
+    def apply_theme(self, dark_mode: bool):
+        """
+        全方位一鍵切換深淺色模式，同時修正字體殘留與圖表邊界消失問題。
+        """
+        from PyQt6.QtWidgets import QApplication
+        app = QApplication.instance()
+        self.is_dark_mode = dark_mode
+
+        if dark_mode:
+            # === 1. 設定深色調色盤 ===
+            app.setPalette(get_dark_palette())
+            
+            # === 2. 強制設定深色 QSS (保證按鈕和輸入框底色不翻白) ===
+            app.setStyleSheet("""
+                /* 強制所有視窗與容器元件底色 */
+                QWidget { 
+                    background-color: #1e1e1e !important; 
+                    color: #dcdcdc; 
+                }
+                /* 精準強制所有按鈕的樣式，洗掉 Designer 的設定 */
+                QPushButton { 
+                    background-color: #323232 !important; 
+                    color: #ffffff !important; 
+                    border: 1px solid #555555 !important; 
+                    padding: 4px;
+                    border-radius: 2px;
+                }
+                /* 補上滑鼠移過去的變化，證明它有吃到樣式 */
+                QPushButton:hover {
+                    background-color: #444444 !important;
+                }
+                /* 輸入框與選單 */
+                QLineEdit, QComboBox, QSpinBox, QComboBox QAbstractItemView { 
+                    background-color: #2d2d2d !important; 
+                    color: #ffffff !important; 
+                    border: 1px solid #555555 !important; 
+                }
+                QHeaderView::section { 
+                    background-color: #323232 !important; 
+                    color: #ffffff !important; 
+                }
+            """)
+            
+            # === 3. 修正 pyqtgraph 圖表文字顏色 ===
+            self.plot_widget.setBackground('#1e1e1e')
+            # 讓圖表的軸線和文字變成白色
+            self.plot_widget.getAxis('left').setPen('#ffffff')
+            self.plot_widget.getAxis('left').setTextPen('#ffffff')
+            self.plot_widget.getAxis('bottom').setPen('#ffffff')
+            self.plot_widget.getAxis('bottom').setTextPen('#ffffff')
+            
+        else:
+            # === 1. 清空任何可能卡死的 QSS 樣式 ===
+            app.setStyleSheet("")
+            self.setStyleSheet("")
+            
+            # === 2. 設定修正後的淺色調色盤 ===
+            app.setPalette(get_light_palette())
+            
+            # === 3. 強制刷新 Fusion 風格（把邊框陰影逼出來） ===
+            app.setStyle("Fusion")
+            
+            # === 4. 強制設定淺色 QSS (徹底解決字體泛白與邊界消失) ===
+            app.setStyleSheet("""
+                QWidget { background-color: #f0f0f0; color: #000000; }
+                QPushButton { background-color: #e1e1e1; color: #000000; border: 1px solid #ababab; padding: 4px; }
+                QPushButton:hover { background-color: #d1d1d1; }
+                QLineEdit, QComboBox, QSpinBox { background-color: #ffffff; color: #000000; border: 1px solid #ababab; }
+                QTabWidget::pane { border: 1px solid #ababab; }
+            """)
+            
+            # === 5. 修正 pyqtgraph 淺色圖表 (最重要！) ===
+            self.plot_widget.setBackground('#ffffff')
+            # 讓圖表的軸線和文字變成黑色，否則在白底上會完全隱形
+            self.plot_widget.getAxis('left').setPen('#000000')
+            self.plot_widget.getAxis('left').setTextPen('#000000')
+            self.plot_widget.getAxis('bottom').setPen('#000000')
+            self.plot_widget.getAxis('bottom').setTextPen('#000000')
+
+        # 刷新全視窗
+        self.update()
+    
     upadte_powermeter_plot_signal = pyqtSignal()
     update_monoscan_remainstep_signal = pyqtSignal(int)
     updare_monoscan_remaintest_signal = pyqtSignal(int)
@@ -280,9 +361,6 @@ class MainWindow(QMainWindow):
         self.spectrometer_connected = False  # kept for legacy attribute checks
         self.stage_connected = False
         self.plotting_started = False
-        # Track the current mode:
-        self.is_dark_mode = True
-        self.setPalette(get_dark_palette())  # Set the initial palette
         # To keep track of the row count for caching:
         self.row_count = 0
         # for mono scan function and plot update:
@@ -379,7 +457,7 @@ class MainWindow(QMainWindow):
             lambda binning, offset, sync_div, lev0, zc0, lev1, zc1:
             self.update_pico_labels(binning, offset, sync_div, lev0, zc0, lev1, zc1)
         )
-
+        self.apply_theme(dark_mode=True) # 預設啟動深色模式
     # def append_output(self, text):
     #     """Appends redirected stdout text to status box."""
     #     if text.strip():  # Avoid adding empty lines
@@ -507,7 +585,7 @@ class MainWindow(QMainWindow):
 
     # Send command to hardware (o0 or o1)
         self.mono.set_exit_mirror(target_pos)
-        self.mono.current_mirror_pos = target_pos
+        #self.mono.current_mirror_pos = target_pos
 
     # Update the "Current Position" label to match the movement
         port_text = "Side" if target_pos == 1 else "Front"
@@ -554,7 +632,7 @@ class MainWindow(QMainWindow):
         self.motor_wait_elapsed = 0
         self.motor_max_wait = max_wait  # 10 seconds
 
-    def sync_hardware_exit_port(self):
+    '''def sync_hardware_exit_port(self):
         """Query the Triax hardware to see which exit mirror is currently active."""
         if self.mono.device_connected:
         # Send the 'w' or 'r' status command to the Triax
@@ -564,7 +642,7 @@ class MainWindow(QMainWindow):
             self.mono.current_mirror_pos = actual_pos
             port_text = "Side Exit" if actual_pos == 1 else "Front Exit"
             self.ui.current_exit_label.setText(f"Active Port: {port_text}")
-            self.mono_and_power_meter_log(f"Hardware Sync: Detected {port_text} active.")
+            self.mono_and_power_meter_log(f"Hardware Sync: Detected {port_text} active.")'''
 
     def check_motor_idle(self):
         """Check the mono motor status and update the UI accordingly."""
@@ -621,8 +699,8 @@ class MainWindow(QMainWindow):
 
         # Use index: 0 for Grating 1 (a0), 1 for Grating 2 (b0)
         target_pos = self.ui.mono_grating_select_comboBox_3.currentIndex()
-        self.ui.Grating_current_position_label.setText(f'Grating : {target_pos}')
-        self.mono_and_power_meter_log(f"Move to grating {target_pos}")
+        self.ui.Grating_current_position_label.setText(f'Grating : {target_pos + 1}')
+        self.mono_and_power_meter_log(f"Move to grating {target_pos + 1}")
 
         self.mono.set_grating(target_pos)
 

@@ -389,10 +389,11 @@ class Triax320:
         else:
             command_string = "e0\r"
 
+        self.device.write_raw(command_string.encode())
+
         try:
         # Send the encoded string to the hardware
             status = self.get_mirror_motor_status()
-
             if status == "idle":
                 self.signals.log_message_signal.emit(f"Mirror moved to postion")
                 return
@@ -430,7 +431,7 @@ class Triax320:
                 current_idx = (self.curr_grating + i) % 3
                 next_idx = (self.curr_grating + i + 1) % 3
                 
-                self.signals.log_message_signal.emit(f"changing grating from{current_idx} to {next_idx}...")
+                self.signals.log_message_signal.emit(f"changing grating from{current_idx + 1} to {next_idx + 1}...")
 
                 # --- 你指定的標準動作序列 ---
                 # A. 取得當前位置並推到右極限
