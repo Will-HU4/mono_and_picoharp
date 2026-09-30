@@ -1556,20 +1556,11 @@ class MainWindow(QMainWindow):
                     print(f"motor move {motor_move}")
                     motor_pos_cur += motor_move
                     print(f"motor at {motor_pos_cur}")
-                    # power meter get intensity and store it to y value list:
-                    print(f"power meter get intensity at {motor_pos_cur}.")
-
-                    # todo: add sample times to even out the power meter reading.(need verify)
-                    self.y_values[index] = self.average_power_reading(samples=5, delay=0.05)
-
-                    # ------------------------------
-                    # self.y_values[index] = float(self.power_meter.read_data())
-                    # self.y_values[index] = motor_pos_cur
-
-                    # send update plot signal to main thread:
-                    self.upadte_powermeter_plot_signal.emit()
-                    # send update mono remain step tp main thread:
-                    self.update_monoscan_remainstep_signal.emit(len(self.x_values)-index)
+                    #scan the position
+                    self.scan_one_position(
+                        motor_pos_cur,
+                        index
+                    )
                     # prevent mono to overload:
                     time.sleep(0.5)
 
@@ -1605,6 +1596,61 @@ class MainWindow(QMainWindow):
                 print(f"Power read error: {e}")
             time.sleep(delay)
         return sum(readings) / len(readings) if readings else 0.0
+        # ======================================================
+    # Measurement Functions
+    # ======================================================
+
+    def measure_power(self):
+        """
+        Current measurement method.
+        Returns averaged power meter reading.
+        """
+        return self.average_power_reading(
+            samples=5,
+            delay=0.05
+        )
+
+
+    def measure_current_point(self):
+        """
+        Generic measurement interface.
+
+        Future measurement modes:
+
+        - Power Meter
+        - Peak Frequency
+        - Peak Intensity
+        - PicoHarp
+        - IV Curve
+
+        Currently returns Power Meter reading.
+        """
+
+        return self.measure_power()
+
+
+    def scan_one_position(self, motor_pos_cur, index):
+        """
+        Perform measurement at one mono position.
+        """
+
+        print(
+            f"Taking measurement at position {motor_pos_cur}"
+        )
+
+        value = self.measure_current_point()
+
+        self.y_values[index] = value
+
+        self.upadte_powermeter_plot_signal.emit()
+
+        self.update_monoscan_remainstep_signal.emit(
+            len(self.x_values) - index
+        )
+
+        return value
+
+
 
     def ultimate_stop(self):
         """Force stop motor and scan thread immediately."""
