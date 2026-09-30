@@ -278,33 +278,10 @@ class MainWindow(QMainWindow):
             
             # === 2. 強制設定深色 QSS (保證按鈕和輸入框底色不翻白) ===
             app.setStyleSheet("""
-                /* 強制所有視窗與容器元件底色 */
-                QWidget { 
-                    background-color: #1e1e1e !important; 
-                    color: #dcdcdc; 
-                }
-                /* 精準強制所有按鈕的樣式，洗掉 Designer 的設定 */
-                QPushButton { 
-                    background-color: #323232 !important; 
-                    color: #ffffff !important; 
-                    border: 1px solid #555555 !important; 
-                    padding: 4px;
-                    border-radius: 2px;
-                }
-                /* 補上滑鼠移過去的變化，證明它有吃到樣式 */
-                QPushButton:hover {
-                    background-color: #444444 !important;
-                }
-                /* 輸入框與選單 */
-                QLineEdit, QComboBox, QSpinBox, QComboBox QAbstractItemView { 
-                    background-color: #2d2d2d !important; 
-                    color: #ffffff !important; 
-                    border: 1px solid #555555 !important; 
-                }
-                QHeaderView::section { 
-                    background-color: #323232 !important; 
-                    color: #ffffff !important; 
-                }
+                QWidget { background-color: #1e1e1e; color: #dcdcdc; }
+                QPushButton { background-color: #323232; color: #ffffff; border: 1px solid #555555; padding: 4px; }
+                QLineEdit, QComboBox, QSpinBox { background-color: #2d2d2d; color: #ffffff; border: 1px solid #555555; }
+                QHeaderView::section { background-color: #323232; color: #ffffff; }
             """)
             
             # === 3. 修正 pyqtgraph 圖表文字顏色 ===
