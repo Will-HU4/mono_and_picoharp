@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import filedialog, messagebox
 import shutil  # saving file module
+import os
 
 
 #OTO USB2.0 spectrameter's VID & PID
@@ -18,9 +19,12 @@ PID = 2732
 OTOdll = ctypes.cdll.LoadLibrary("./UserApplication.dll")
 # -------------------------------------------------------
 # keep track of how many row of data saved:
+SPEC_VID = 1592
+SPEC_PID = 2732
+
 row_count = 0
 cache_location = './spectrometer_data_cache.csv'
-integration_time = 10
+integration_time = 100
 update_active = False
 data_count = 10
 def print_data(textbox: tk.Text, content: str):
@@ -261,7 +265,7 @@ def acquire_full_spectrum(oto_dll, device_handle, framesize, wavelengths, integr
     return intensity_data
 
 
-def generate_step_to_wavelength_mapping(mono_instance, steps_to_scan, output_json="mapping.json"):
+def generate_step_to_wavelength_mapping_peak(mono_instance, steps_to_scan, output_json="mapping_new.json", min_intensity_threshold=100.0):
     oto_dll, device_handle, framesize, wavelengths = connect_spectrometer()
     if not oto_dll:
         print("Aborting: Spectrometer initialization failed.")
@@ -285,7 +289,7 @@ def generate_step_to_wavelength_mapping(mono_instance, steps_to_scan, output_jso
                     break
                 time.sleep(0.5)
 
-            time.sleep(0.2)
+            time.sleep(0.5)
 
             # Read full intensity spectrum
             intensity_data = acquire_full_spectrum(
@@ -294,18 +298,69 @@ def generate_step_to_wavelength_mapping(mono_instance, steps_to_scan, output_jso
 
             if intensity_data:
                 max_intensity = max(intensity_data)
-                peak_index = intensity_data.index(max_intensity)
-                peak_wl = wavelengths[peak_index]
+                
+                # Check if peak intensity meets the threshold
+                if max_intensity >= min_intensity_threshold:
+                    peak_index = intensity_data.index(max_intensity)
+                    peak_wl = wavelengths[peak_index]
 
-                collected_steps.append(step)
-                collected_peak_wavelengths.append(peak_wl)
-                collected_peak_intensities.append(max_intensity)
-                last_full_spectrum = intensity_data
+                    collected_steps.append(step)
+                    collected_peak_wavelengths.append(peak_wl)
+                    collected_peak_intensities.append(max_intensity)
+                    last_full_spectrum = intensity_data
 
-                print(f"Step {step:6d} -> Peak Wavelength: {peak_wl:.4f} nm (Peak Intensity: {max_intensity:.1f})")
+                    print(f"Step {step:6d} -> Peak Wavelength: {peak_wl:.4f} nm (Peak Intensity: {max_intensity:.1f})")
+                else:
+                    print(f"Step {step:6d} -> Skipped (Peak Intensity {max_intensity:.1f} < {min_intensity_threshold})")
 
     except KeyboardInterrupt:
         print("\nCalibration scan interrupted manually.")
+
+    # -------------------------------------------------------------------------
+    # OUTPUT 1: JSON Calibration File (a * step + b)
+    # -------------------------------------------------------------------------
+    if len(collected_steps) >= 2:
+        a, b = np.polyfit(collected_steps, collected_peak_wavelengths, 1)
+
+        mapping_data = {"a": float(a), "b": float(b)}
+        with open(output_json, "w") as f:
+            json.dump(mapping_data, f, indent=4)
+
+        print("\n" + "=" * 50)
+        print("CALIBRATION SUCCESSFUL")
+        print(f"Mapping Equation : Wavelength = {a:.6e} * step + {b:.4f}")
+        print(f"JSON saved to    : {output_json}")
+    else:
+        print("\n" + "=" * 50)
+        print(f"CALIBRATION FAILED: Not enough valid data points (>= 2 required, got {len(collected_steps)}) above intensity threshold {min_intensity_threshold}.")
+
+    # -------------------------------------------------------------------------
+    # OUTPUT 2: Step-to-Wavelength CSV
+    # -------------------------------------------------------------------------
+    if collected_steps:
+        step_csv = "step_to_wavelength.csv"
+        with open(step_csv, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Step Position", "Peak Wavelength (nm)", "Peak Intensity"])
+            for step, wl, intensity in zip(collected_steps, collected_peak_wavelengths, collected_peak_intensities):
+                writer.writerow([step, f"{wl:.4f}", f"{intensity:.2f}"])
+
+        print(f"Step CSV saved to: {step_csv}")
+
+    # -------------------------------------------------------------------------
+    # OUTPUT 3: Intensity-to-Wavelength CSV
+    # -------------------------------------------------------------------------
+    if last_full_spectrum:
+        spectrum_csv = "intensity_to_wavelength.csv"
+        with open(spectrum_csv, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Wavelength (nm)", "Intensity"])
+            for wl, intensity in zip(wavelengths, last_full_spectrum):
+                writer.writerow([f"{wl:.4f}", f"{intensity:.2f}"])
+
+        print(f"Spectrum CSV saved to: {spectrum_csv}")
+    
+    print("=" * 50 + "\n")
 
     # -------------------------------------------------------------------------
     # OUTPUT 1: JSON Calibration File (a * step + b)
@@ -345,4 +400,104 @@ def generate_step_to_wavelength_mapping(mono_instance, steps_to_scan, output_jso
             writer.writerow([f"{wl:.4f}", f"{intensity:.2f}"])
 
     print(f"Spectrum CSV saved to: {spectrum_csv}")
+    print("=" * 50 + "\n")
+
+
+def generate_step_to_wavelength_mapping(
+    mono_instance, 
+    steps_to_scan, 
+    output_json="mapping_new.json", 
+    output_dir="data sets"
+):
+    oto_dll, device_handle, framesize, wavelengths = connect_spectrometer()
+    if not oto_dll:
+        print("Aborting: Spectrometer initialization failed.")
+        return
+
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    collected_steps = []
+    collected_peak_wavelengths = []
+    collected_peak_intensities = []
+
+    print(f"\n--- Starting Step-to-Wavelength Calibration Scan ---")
+    print(f"Individual step spectra will be saved to folder: '{output_dir}/'")
+
+    try:
+        for step in steps_to_scan:
+            current_pos = mono_instance.get_motor_position()
+            move_amount = step - current_pos
+            mono_instance.move_motor_relative(move_amount)
+
+            for _ in range(20):
+                if mono_instance.get_motor_status() == 'idle':
+                    break
+                time.sleep(0.5)
+
+            time.sleep(0.5)
+
+            # Read full intensity spectrum
+            intensity_data = acquire_full_spectrum(
+                oto_dll, device_handle, framesize, wavelengths
+            )
+
+            if intensity_data:
+                # -------------------------------------------------------------
+                # 1. Save Individual Step CSV: Wavelength (nm) vs Intensity
+                # -------------------------------------------------------------
+                step_file_path = os.path.join(output_dir, f"{step}.csv")
+                with open(step_file_path, "w", newline="") as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["Wavelength (nm)", "Intensity"])
+                    for wl, intensity in zip(wavelengths, intensity_data):
+                        writer.writerow([f"{wl:.4f}", f"{intensity:.2f}"])
+
+                # -------------------------------------------------------------
+                # 2. Record Peak Information for Linear Fitting
+                # -------------------------------------------------------------
+                max_intensity = max(intensity_data)
+                peak_index = intensity_data.index(max_intensity)
+                peak_wl = wavelengths[peak_index]
+
+                collected_steps.append(step)
+                collected_peak_wavelengths.append(peak_wl)
+                collected_peak_intensities.append(max_intensity)
+
+                print(f"Step {step:6d} -> Saved '{step_file_path}' | Peak Wavelength: {peak_wl:.4f} nm | Intensity: {max_intensity:.1f}")
+
+    except KeyboardInterrupt:
+        print("\nCalibration scan interrupted manually.")
+
+    # -------------------------------------------------------------------------
+    # OUTPUT 2: JSON Calibration File (a * step + b)
+    # -------------------------------------------------------------------------
+    if len(collected_steps) >= 2:
+        a, b = np.polyfit(collected_steps, collected_peak_wavelengths, 1)
+
+        mapping_data = {"a": float(a), "b": float(b)}
+        with open(output_json, "w") as f:
+            json.dump(mapping_data, f, indent=4)
+
+        print("\n" + "=" * 50)
+        print("CALIBRATION SUCCESSFUL")
+        print(f"Mapping Equation : Wavelength (nm) = {a:.6e} * step + {b:.4f}")
+        print(f"JSON saved to    : {output_json}")
+    else:
+        print("\n" + "=" * 50)
+        print(f"CALIBRATION FAILED: Not enough data points recorded (>= 2 required, got {len(collected_steps)}).")
+
+    # -------------------------------------------------------------------------
+    # OUTPUT 3: Step Summary CSV
+    # -------------------------------------------------------------------------
+    if collected_steps:
+        step_csv = "step_to_wavelength.csv"
+        with open(step_csv, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Step Position", "Peak Wavelength (nm)", "Peak Intensity"])
+            for step, wl, intensity in zip(collected_steps, collected_peak_wavelengths, collected_peak_intensities):
+                writer.writerow([step, f"{wl:.4f}", f"{intensity:.2f}"])
+
+        print(f"Peak Summary CSV saved to: {step_csv}")
+    
     print("=" * 50 + "\n")
