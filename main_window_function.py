@@ -1205,14 +1205,21 @@ class MainWindow(QMainWindow):
         if os.path.exists(filepath):
             with open(filepath, "r") as f:
                 mapping = json.load(f)
-            a = round(float(mapping["a"]), 5)  # round to 5 decimals
-            b = float(mapping["b"])
-            self.min_resolution = abs(a)  # nm per step
+            
+            c1 = float(mapping["C1"])
+            c2 = float(mapping["C2"])
+            c3 = float(mapping["C3"])
+            self.mapping_coefficients = (c1, c2, c3)
+            
+            # Resolution at step 0 (dλ/dS = C1 * C2 * cos(C2*S + C3))
+            self.min_resolution = round(abs(c1 * c2), 5)  # nm per step
             self.mapping_exists = True
-            self.mapping_coefficients = (a, b)
-            self.ui.start_mono_pos_label.setText(f">={self.mapping_coefficients[1]}")
-            self.ui.end_mono_pos_label.setText(f"<=1500")
-            print(f"Loaded mapping: wavelength = {self.mapping_coefficients[0]} * step + {self.mapping_coefficients[1]}")
+            
+            min_wl = round(c1 * np.sin(c3), 2)
+            self.ui.start_mono_pos_label.setText(f">={min_wl}")
+            self.ui.end_mono_pos_label.setText("<=1500")
+            
+            print(f"Loaded mapping: λ(step) = {c1:.2f} * sin({c2:.4e} * step + {c3:.4f})")
             print(f"Minimum resolution: {self.min_resolution} nm/step")
         else:
             self.min_resolution = None
@@ -1244,8 +1251,17 @@ class MainWindow(QMainWindow):
 
             self.toggle_input_mode(use_wavelength=True)
             self.load_mapping_and_resolution()
-            self.ui.mono_range_mode_label.setText(f"Wavelength Mode\nResolution: {self.mapping_coefficients[0]} nm/step ")
-            self.ui.position_limit_label.setText(f"{self.mapping_coefficients[1]}nm <= wl <= 1500nm")
+            c1, c2, c3 = self.mapping_coefficients
+            
+            # 1. Compute resolution at S = 0 (or ~0.002 nm/step)
+            approx_res = round(abs(c1 * c2), 5)  # nm/step
+            
+            # 2. Compute minimum wavelength at step 0: lambda(0) = C1 * sin(C3)
+            min_wl = max(0.0, round(c1 * np.sin(c3), 2))
+            
+            # 3. Update UI Labels
+            self.ui.mono_range_mode_label.setText(f"Wavelength Mode\nResolution: ~{approx_res} nm/step")
+            self.ui.position_limit_label.setText(f"{min_wl}nm <= wl <= 1500nm")
         else:
             self.ui.mono_range_mode_label.setText("Step Mode")
             self.ui.unit_label.setText("step")
