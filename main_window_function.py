@@ -1224,7 +1224,7 @@ class MainWindow(QMainWindow):
         else:
             self.min_resolution = None
             self.mapping_exists = False
-            self.mapping_coefficients = (None, None)
+            self.mapping_coefficients = (None, None, None)
             self.ui.start_mono_pos_label.setText(">=-250000")
             self.ui.end_mono_pos_label.setText("<=750000")
             #For triax 320
@@ -1334,7 +1334,8 @@ class MainWindow(QMainWindow):
             try:
                 wl_start = float(self.ui.mono_start_pos_input.toPlainText())
                 wl_end = float(self.ui.mono_end_pos_input.toPlainText())
-                multiplier = self.ui.mono_wl_spinbox.value()  # Already validated to be > 0
+                # Desired wavelength step size in nm (e.g., 0.5 nm, 1.0 nm)
+                wl_step = self.ui.mono_wl_spinbox.value()
             except ValueError:
                 self.mono_and_power_meter_log("Please enter valid numbers for wavelength input.")
                 return False
@@ -1343,25 +1344,33 @@ class MainWindow(QMainWindow):
                 self.mono_and_power_meter_log("Wavelength start cannot be greater than end.")
                 return False
 
-            # Get mapping coefficients
-            a, b = self.mapping_coefficients
-            if a is None:
+            # Get Sine mapping coefficients (C1, C2, C3)
+            c1, c2, c3 = self.mapping_coefficients
+            if c1 is None or c2 is None or c3 is None:
                 self.mono_and_power_meter_log("Mapping coefficients not loaded.")
                 return False
 
-            # turn multiplier into step size in wl
-            wl_step = multiplier * self.min_resolution
-            # Calculate start and end steps
-            wavelengths_raw = np.arange(wl_start, wl_end + wl_step/2 , wl_step)
+            # 1. Generate target wavelength sequence
+            wavelengths_raw = np.arange(wl_start, wl_end + wl_step / 2.0, wl_step)
             print(f"Raw wavelengths: {wavelengths_raw}")
-            steps_rounded = [round((wl - b) / a) for wl in wavelengths_raw]
 
-            # remove duplicates and sort to a new list
+            # 2. Convert target wavelengths to discrete motor steps using inverse sine:
+            # S = (arcsin(λ / C1) - C3) / C2
+            try:
+                steps_rounded = [
+                    int(round((np.arcsin(wl / c1) - c3) / c2))
+                    for wl in wavelengths_raw
+                ]
+            except ValueError:
+                self.mono_and_power_meter_log("Requested wavelength is outside the valid physical grating range.")
+                return False
+
+            # 3. Remove duplicate steps and sort in ascending order
             unique_steps = sorted(set(steps_rounded))
 
-            # from steps to wavelengths to ensure correct mapping
-            wavelengths = [a * s + b for s in unique_steps]
-
+            # 4. Map exact physical steps back to true output wavelengths:
+            # λ = C1 * sin(C2 * S + C3)
+            wavelengths = [c1 * np.sin(c2 * s + c3) for s in unique_steps]
             # check if steps are within range
             if any(step < -250000 or step > 750000 for step in unique_steps):
                 self.mono_and_power_meter_log("Computed step out of range (-250000 to 750000).")
@@ -1873,78 +1882,85 @@ class MainWindow(QMainWindow):
         # if not self.mono.device_connected:
         #     self.mono_and_power_meter_log("Mono not connected.")
         #     return
-        # Get mono motor position:
+        
+        # Get mono motor position (steps)
         mono_pos = self.mono.get_motor_position()
-        # for testing purpose----------------:
-        # mono_pos = random.randint(-250000, 750000)
-        # -----------------------------------
+        
         # Check if mapping exists to convert step to wavelength
         if self.mapping_exists:
-            a, b = self.mapping_coefficients
-            if a is None:
+            c1, c2, c3 = self.mapping_coefficients
+            if c1 is None or c2 is None or c3 is None:
                 self.mono_and_power_meter_log("Mapping coefficients not loaded.")
                 return
-            # Convert current step position to wavelength and display
-            mono_wavelength = mono_pos * a + b
+            
+            # Convert current step position to wavelength using forward Sine model:
+            # λ = C1 * sin(C2 * S + C3)
+            mono_wavelength = c1 * np.sin(c2 * mono_pos + c3)
             self.ui.mono_pos_label.setText(f"{mono_pos} ({mono_wavelength:.4f} nm)")
-        # display step position if no mapping exists
+            
+        # Display raw step position if no mapping exists
         else:
             self.ui.mono_pos_label.setText(f"{mono_pos}")
 
 # todo: add update mono position
     def mono_goto_button_clicked(self):
-        """Handle user clicking 'Goto' to move motor to specific step."""
+        """Handle user clicking 'Goto' to move motor to specific step or target wavelength."""
         # if not self.mono.device_connected:
         #     self.mono_and_power_meter_log("Mono not connected.")
         #     return
 
-        # if mapping exists, convert input wavelength value to step
+        # If mapping exists, convert input wavelength value to step using inverse sine model
         if self.mapping_exists:
-            a, b = self.mapping_coefficients
-            if a is None:
+            c1, c2, c3 = self.mapping_coefficients
+            if c1 is None or c2 is None or c3 is None:
                 self.mono_and_power_meter_log("Mapping coefficients not loaded.")
                 return
-            # take input wavelength from the text box into float
+
+            # Take input wavelength from text box
             try:
                 input_text = self.ui.mono_pos_input.toPlainText()
                 input_value = float(input_text)
             except ValueError:
                 self.mono_and_power_meter_log("Please enter a valid number.")
                 return
-            # convert input wavelength value to nearest step
-            position = round((input_value - b) / a)
-            actual_wavelength = a * position + b
-            self.mono_and_power_meter_log(f"Converted nearest wavelength {actual_wavelength:.4f} nm to step {position}")
 
-        # if no mapping exists, take input step value from the text box
+            # Convert target wavelength to nearest motor step:
+            # S = (arcsin(λ / C1) - C3) / C2
+            try:
+                position = int(round((np.arcsin(input_value / c1) - c3) / c2))
+                actual_wavelength = c1 * np.sin(c2 * position + c3)
+                self.mono_and_power_meter_log(
+                    f"Converted target {input_value:.2f} nm -> step {position} (actual: {actual_wavelength:.4f} nm)"
+                )
+            except (ValueError, ZeroDivisionError):
+                self.mono_and_power_meter_log(
+                    f"Target wavelength {input_value} nm is out of physical range (|λ| <= {c1:.1f} nm)."
+                )
+                return
+
+        # If no mapping exists, take input raw step value directly
         else:
             try:
                 position = int(self.ui.mono_pos_input.toPlainText())
-                self.mono_and_power_meter_log(f"Mono goes to position: {position}")
+                self.mono_and_power_meter_log(f"Mono target step position: {position}")
             except ValueError:
                 self.mono_and_power_meter_log("Please enter a valid integer for motor position.")
                 return
 
-        # if position within range send motor to absolute position
-        if isinstance(position, int) and -250000 <= position <= 750000:\
-        #For triax 320
-        #if isinstance(position, int) and 0 <= position <= 32000:    
+        # Check step range limit and send motor to absolute position
+        if isinstance(position, int) and -250000 <= position <= 750000:
             try:
-                # Get current position of the motor
                 current_pos = self.mono.get_motor_position()
                 move_amount = position - current_pos
                 self.mono_and_power_meter_log(f"Moving motor from {current_pos} to {position} (Δ = {move_amount})")
+                
                 # Move motor relative to current position
                 self.mono.move_motor_relative(move_amount)
-                # QTimer to update the position label after moving
-                # todo: need verify
                 self.start_motor_status_timer()
             except Exception as e:
                 self.mono_and_power_meter_log(f"Failed to move motor: {e}")
         else:
             self.mono_and_power_meter_log("Target step must be between -250000 and 750000.")
-            #For triax 320
-            #self.mono_and_power_meter_log("Target step must be between 0 and 32000.")
             return
 
     def ui_check_motor_limit(self):
