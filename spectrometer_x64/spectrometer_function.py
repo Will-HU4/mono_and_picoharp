@@ -112,7 +112,7 @@ def getIntensity(device_handle, device_framesize, intensityArray: list):
     # integration_time_us: The integration time in microseconds (us).
     # buffer: A pointer to a 1D array buffer where the data (in counts) will be stored.
     # average: The number of times the data acquisition is averaged.
-    OTOdll.UAI_SpectrometerDataOneshot(device_handle,integratingTime,byref(TempIntensity),1)
+    OTOdll.UAI_SpectrometerDataOneshot(device_handle,integratingTime,byref(TempIntensity),10)
     #Do Background
     OTOdll.UAI_BackgroundRemove(device_handle,integratingTime,byref(TempIntensity))
     #Do Linearity
@@ -250,20 +250,40 @@ def connect_spectrometer(dll_path="./UserApplication.dll"):
     return oto_dll, device_handle, framesize, wavelengths
 
 
-def acquire_full_spectrum(oto_dll, device_handle, framesize, wavelengths, integration_time_ms=10):
-    """Acquires current intensity spectrum across all wavelengths."""
+def acquire_full_spectrum(oto_dll, device_handle, framesize, wavelengths, integration_time_ms=10, avg_count=10):
+    """
+    Acquires intensity spectrum with dynamic integration time and hardware/software averaging.
+    - integration_time_ms: Integration time in milliseconds.
+    - avg_count: Number of shots averaged by the spectrometer DLL (reduces noise by sqrt(avg_count)).
+    """
     temp_intensity = (c_float * framesize.value)()
     integrating_time_us = int(integration_time_ms * 1000)
 
+    # 1. Acquire averaged data directly via DLL (average parameter set to avg_count)
     oto_dll.UAI_SpectrometerDataOneshot(
-        device_handle, integrating_time_us, byref(temp_intensity), 1
+        device_handle, integrating_time_us, byref(temp_intensity), avg_count
     )
+    
+    # 2. Post-processing corrections
     oto_dll.UAI_BackgroundRemove(device_handle, integrating_time_us, byref(temp_intensity))
     oto_dll.UAI_LinearityCorrection(device_handle, framesize, byref(temp_intensity))
 
     intensity_data = [temp_intensity[i] for i in range(framesize.value)]
     return intensity_data
 
+def get_adaptive_acquisition_params(step):
+    """
+    Returns (integration_time_ms, avg_count) based on motor step position.
+    """
+    if step < 200000:
+        # Weak signal region (UV/Blue): Long integration time & high averaging
+        return 150.0, 16  # 150 ms, 16x averaging (SNR boost ~ 4x)
+    elif step < 300000:
+        # Transition region
+        return 50.0, 10   # 50 ms, 10x averaging
+    else:
+        # High intensity region (600nm - 800nm): Short integration time to avoid saturation
+        return 10.0, 5    # 10 ms, 5x averaging
 
 def generate_step_to_wavelength_mapping_peak(mono_instance, steps_to_scan, output_json="mapping_new.json", min_intensity_threshold=100.0):
     oto_dll, device_handle, framesize, wavelengths = connect_spectrometer()
@@ -425,23 +445,30 @@ def generate_step_to_wavelength_mapping(
     print(f"Individual step spectra will be saved to folder: '{output_dir}/'")
 
     try:
+        # Inside generate_step_to_wavelength_mapping loop:
         for step in steps_to_scan:
             current_pos = mono_instance.get_motor_position()
             move_amount = step - current_pos
             mono_instance.move_motor_relative(move_amount)
 
+            # Wait for motor to finish moving
             for _ in range(20):
                 if mono_instance.get_motor_status() == 'idle':
                     break
-                time.sleep(0.5)
+            time.sleep(0.5)
 
             time.sleep(0.5)
 
-            # Read full intensity spectrum
-            intensity_data = acquire_full_spectrum(
-                oto_dll, device_handle, framesize, wavelengths
-            )
+            # Compute step-dependent acquisition parameters
+            int_time_ms, num_avg = get_adaptive_acquisition_params(step)
 
+            # Read spectrum with dynamic parameters
+            intensity_data = acquire_full_spectrum(
+            oto_dll, device_handle, framesize, wavelengths, 
+            integration_time_ms=int_time_ms, 
+            avg_count=num_avg
+            )
+            # Save step CSV...
             if intensity_data:
                 # -------------------------------------------------------------
                 # 1. Save Individual Step CSV: Wavelength (nm) vs Intensity
