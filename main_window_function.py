@@ -1269,9 +1269,10 @@ class MainWindow(QMainWindow):
             self.ui.unit_label_3.setText("step")
             self.ui.unit_label_4.setText("step")
             self.toggle_input_mode(use_wavelength=False)
-            self.ui.position_limit_label.setText("-250000 <= step <= 750000")
+            #For triax 550
+            #self.ui.position_limit_label.setText("-250000 <= step <= 750000")
             #For triax 320
-            #self.ui.position_limit_label.setText("0 <= step <= 32000")
+            self.ui.position_limit_label.setText("0 <= step <= 32000")
 
     def validate_mono_parameters(self, step_start, step_end, step_size, test_num):
         """validate monochromator parameters to fit within safety limits"""
